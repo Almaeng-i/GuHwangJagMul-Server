@@ -1,12 +1,12 @@
-name: "✨ Feature"
-description: "기능 구현해야 할 것이 있나요? 👀"
+name: "✨ ToDo"
+description: "해야할 일들이 있나요? 👀"
 body:
 
   - type: textarea
     attributes:
       label: Describe
       description: |
-        [Description] 구현할 작업을 작성해 주세요!
+        [Description] 해야할 일들을 작성해 주세요!
       placeholder: |
         ex) 로그인 기능 구현
   - type: textarea
