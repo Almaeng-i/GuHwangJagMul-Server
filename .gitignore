@@ -1,5 +1,5 @@
-# Created by https://www.toptal.com/developers/gitignore/api/python,django
-# Edit at https://www.toptal.com/developers/gitignore?templates=python,django
+# Created by https://www.toptal.com/developers/gitignore/api/venv,django,python
+# Edit at https://www.toptal.com/developers/gitignore?templates=venv,django,python
 
 ### Django ###
 *.log
@@ -262,6 +262,19 @@ poetry.toml
 
 # LSP config files
 pyrightconfig.json
+
+### venv ###
+# Virtualenv
+# http://iamzed.com/2009/05/07/a-primer-on-virtualenv/
+[Bb]in
+[Ii]nclude
+[Ll]ib
+[Ll]ib64
+[Ll]ocal
+[Ss]cripts
+pyvenv.cfg
+pip-selfcheck.json
+
 
 # DS_Store
 .DS_Store
