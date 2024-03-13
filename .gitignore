@@ -282,4 +282,7 @@ pip-selfcheck.json
 **/.DS_Store
 **/._.DS_Store
 
+# secret_key
+secrets.json
+
 # End of https://www.toptal.com/developers/gitignore/api/python,django
