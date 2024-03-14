@@ -15,7 +15,7 @@ from pathlib import Path
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent
 
 # secret key path
 secret_file = os.path.join(BASE_DIR, 'secrets.json')
@@ -34,7 +34,7 @@ def get_secret(setting, secrets):
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = get_secret(secrets,"SECRET_KEY")
+SECRET_KEY = get_secret("SECRET_KEY",secrets)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
