@@ -19,10 +19,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # secret key path
 secret_file = os.path.join(BASE_DIR, 'secrets.json')
+
 with open(secret_file) as f:
     secrets = json.loads(f.read())
     
-def get_secret(setting, secrets=secrets):
+def get_secret(setting, secrets):
     try:
         return secrets[setting]
     except KeyError:
@@ -33,7 +34,7 @@ def get_secret(setting, secrets=secrets):
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = get_secret("SECRET_KEY")
+SECRET_KEY = get_secret(secrets,"SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
