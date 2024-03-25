@@ -13,14 +13,6 @@ import requests
 # Create your views here.
 def kakao_login(request):
     rest_api_key = getattr(settings, 'KAKAO_REST_API_KEY')
-    # redirect_uri = 'http://localhost:8000/accounts/login/kakao/callback'
-    # redirect_params = {
-    #     'client_id': rest_api_key,
-    #     'redirect_uri': redirect_uri,
-    #     'response_type': 'code'
-    # }
-    # redirect_url = f"https://kauth.kakao.com/oauth/authorize?{urlencode(redirect_params)}
-    # return redirect(redirect_url)
     
     # 원래 참고하던 doc에서 사용하는 코드
     return redirect(f"https://kauth.kakao.com/oauth/authorize?client_id={rest_api_key}&redirect_uri={settings.KAKAO_CALLBACK_URI}&response_type=code")
