@@ -65,7 +65,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django.contrib.sites",         # 복수 사이트 구현을 위하여 코드 추가.
+    "django.contrib.sites",
     
     # My App
     "accounts",
