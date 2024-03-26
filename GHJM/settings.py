@@ -43,7 +43,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 KAKAO_REST_API_KEY = get_secret('KAKAO_REST_API_KEY', secrets)
-STATE = "random_string",          # url 요청시 사용되는 값
+STATE = "random_string",         # user의 로그인 여부를 판단하기 위한 코드
 
 # Kakao Callback URI
 KAKAO_CALLBACK_URI = get_secret('KAKAO_CALLBACK_URI', secrets)
@@ -52,7 +52,8 @@ KAKAO_CALLBACK_URI = get_secret('KAKAO_CALLBACK_URI', secrets)
 KAKAO_SECREAT_KEY = get_secret('KAKAO_SECREAT_KEY', secrets)
 
 # BASE_URL
-BASE_URL = get_secret('BASE_URL', secrets)
+SERVER_BASE_URL = get_secret('SERVER_BASE_URL', secrets)
+
 
 
 # Application definition
@@ -64,7 +65,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django.contrib.sites",         # 추가
+    "django.contrib.sites",         # 복수 사이트 구현을 위하여 코드 추가.
     
     # My App
     "accounts",
