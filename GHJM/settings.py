@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os, json
 from django.core.exceptions import ImproperlyConfigured
 from pathlib import Path
+from datetime import timedelta      # JWT 사용됨
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -34,12 +35,25 @@ def get_secret(setting, secrets):
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = get_secret("SECRET_KEY",secrets)
+SECRET_KEY = get_secret("SECRET_KEY",secrets),
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
+
+KAKAO_REST_API_KEY = get_secret('KAKAO_REST_API_KEY', secrets)
+STATE = "random_string",         # user의 로그인 여부를 판단하기 위한 코드
+
+# Kakao Callback URI
+KAKAO_CALLBACK_URI = get_secret('KAKAO_CALLBACK_URI', secrets)
+
+# Kakao Client Secret
+KAKAO_SECREAT_KEY = get_secret('KAKAO_SECREAT_KEY', secrets)
+
+# BASE_URL
+SERVER_BASE_URL = get_secret('SERVER_BASE_URL', secrets)
+
 
 
 # Application definition
@@ -51,9 +65,57 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "social_login.apps.SocialLoginConfig",
-    "Intro.apps.IntroConfig",
+    "django.contrib.sites",
+    
+    # My App
+    "accounts",
+    
+    # DRF 
+    'rest_framework',
+    'rest_framework.authtoken',
+    'rest_framework_simplejwt.token_blacklist',
+    
+    # DR-Auth
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
+    
+    # DR-Allauth
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.kakao',        # kakao provider 추가
 ]
+
+
+SITE_ID = 1
+AUTH_USER_MODEL = 'accounts.CustomUser'
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
+    ),
+}
+
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None        # username 필드 사용 x
+ACCOUNT_EMAIL_REQUIRED = True                   # email 필드 사용 o
+ACCOUNT_USERNAME_REQUIRED = False               # username 필드 사용 x
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+
+
+# JWT Setting
+REST_USE_JWT = True
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=2),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+}
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -63,6 +125,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'allauth.account.middleware.AccountMiddleware',         # allauth middleware 추가
 ]
 
 ROOT_URLCONF = "GHJM.urls"
@@ -137,3 +200,5 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
