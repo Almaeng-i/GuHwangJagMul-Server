@@ -35,7 +35,7 @@ def get_secret(setting, secrets):
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = get_secret("SECRET_KEY",secrets),
+SECRET_KEY = get_secret("SECRET_KEY",secrets)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -43,13 +43,13 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 KAKAO_REST_API_KEY = get_secret('KAKAO_REST_API_KEY', secrets)
-STATE = "random_string",         # user의 로그인 여부를 판단하기 위한 코드
+STATE = "random_string"        # user의 로그인 여부를 판단하기 위한 코드
 
 # Kakao Callback URI
 KAKAO_CALLBACK_URI = get_secret('KAKAO_CALLBACK_URI', secrets)
 
 # Kakao Client Secret
-KAKAO_SECREAT_KEY = get_secret('KAKAO_SECREAT_KEY', secrets)
+KAKAO_SECRET_KEY = get_secret('KAKAO_SECRET_KEY', secrets)
 
 # BASE_URL
 SERVER_BASE_URL = get_secret('SERVER_BASE_URL', secrets)
@@ -84,12 +84,25 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.kakao',        # kakao provider 추가
+    
+    # oauth2
+    'oauth2_provider',
 ]
 
 
 SITE_ID = 1
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
+
+SOCIALACCOUNT_PROVIDERS = {
+    'kakao': {
+        'APP': {
+            'client_id': get_secret('KAKAO_CALLBACK_URI',secrets),
+            'secret': get_secret('KAKAO_SECRET_KEY',secrets),
+            'key': ''
+        }
+    }
+}
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
@@ -126,6 +139,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     'allauth.account.middleware.AccountMiddleware',         # allauth middleware 추가
+    'oauth2_provider.middleware.OAuth2TokenMiddleware',     # oauth middleware 추가
 ]
 
 ROOT_URLCONF = "GHJM.urls"
@@ -178,13 +192,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "ko-kr"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Seoul"
 
 USE_I18N = True
 
