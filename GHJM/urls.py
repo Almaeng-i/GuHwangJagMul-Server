@@ -23,3 +23,4 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('accounts/', include('dj_rest_auth.urls')),
 ]
+
