@@ -13,7 +13,7 @@ import requests
 def kakao_login(request):
     rest_api_key = getattr(settings, 'KAKAO_REST_API_KEY')
     redirect_uri = getattr(settings, 'KAKAO_CALLBACK_URI')
-    authorize_url = f"https://kauth.kakao.com/oauth/authorize?client_id={rest_api_key}&redirect_uri={redirect_uri}&response_type=code"
+    authorize_url = f"https://kauth.kakao.com/oauth/authorize?client_id={rest_api_key}&redirect_uri={redirect_uri}&response_type=code&scope=account_email"
     return redirect(authorize_url) 
 
 class KakaoCallbackView(View):
