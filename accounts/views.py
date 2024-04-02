@@ -5,8 +5,9 @@ from dj_rest_auth.registration.views import SocialLoginView
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from django.http import JsonResponse
 from rest_framework import status
-
+from .models import CustomUser
 from django.views import View
+from django.core.exceptions import ObjectDoesNotExist
 import requests
 
 # Create your views here.
@@ -39,6 +40,18 @@ class KakaoCallbackView(View):
         profile_response = requests.get(profile_url, headers=headers)
         profile_data = profile_response.json()
         
+        email = profile_data.get('kakao_account', {}).get('email')
+        nickname = profile_data.get('properties', {}).get('nickname')
+        
+        try:
+            user = CustomUser.objects.get(email=email)
+            user.is_social_user = True      
+            user.social_provider = "Kakao"
+            user.social_uid = profile_data.get('id')
+            user.save()
+        except ObjectDoesNotExist:
+            user = CustomUser.objects.create(email=email, is_social_user=True, social_provider="Kakao", social_uid=profile_data.get('id'))
+                
         return JsonResponse(profile_data)
     
     
