@@ -42,7 +42,6 @@ class KakaoCallbackView(View):
         
         try:
             user = CustomUser.objects.get(email=email)
-            print("User ID : ", user.id)
             user.is_social_user = True      
             user.social_provider = "Kakao"
             user.social_uid = profile_data.get('id')
