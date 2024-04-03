@@ -1,8 +1,5 @@
 from django.shortcuts import render,redirect
 from django.conf import settings
-from allauth.socialaccount.providers.kakao import views as kakao_view
-from dj_rest_auth.registration.views import SocialLoginView
-from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from django.http import JsonResponse
 from rest_framework import status
 from .models import CustomUser
@@ -45,17 +42,14 @@ class KakaoCallbackView(View):
         
         try:
             user = CustomUser.objects.get(email=email)
+            print("User ID : ", user.id)
             user.is_social_user = True      
             user.social_provider = "Kakao"
             user.social_uid = profile_data.get('id')
+            user.nickname = nickname
             user.save()
         except ObjectDoesNotExist:
             user = CustomUser.objects.create(email=email, is_social_user=True, social_provider="Kakao", social_uid=profile_data.get('id'))
                 
         return JsonResponse(profile_data)
     
-    
-class KakaoLogin(SocialLoginView):
-    adapter_class = kakao_view.KakaoOAuth2Adapter
-    client_class = OAuth2Client
-    callback_url = settings.KAKAO_CALLBACK_URI
