@@ -5,6 +5,7 @@ from rest_framework import status
 from .models import CustomUser
 from django.views import View
 from django.core.exceptions import ObjectDoesNotExist
+from .jwt import generateAccessToken, generateRefreshToken
 import requests
 
 # Create your views here.
@@ -14,6 +15,7 @@ def kakao_login(request):
     authorize_url = f"https://kauth.kakao.com/oauth/authorize?client_id={rest_api_key}&redirect_uri={redirect_uri}&response_type=code&scope=account_email"
     return redirect(authorize_url) 
 
+
 class KakaoCallbackView(View):
     def get(self, request):
         rest_api_key = getattr(settings, 'KAKAO_REST_API_KEY')
@@ -22,7 +24,7 @@ class KakaoCallbackView(View):
         
          # Access Token Request
         token_url = f"https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id={rest_api_key}&redirect_uri={redirect_uri}&code={code}"
-     
+        
         token_response = requests.post(token_url)
         token_data = token_response.json()
         
@@ -49,6 +51,9 @@ class KakaoCallbackView(View):
             user.save()
         except ObjectDoesNotExist:
             user = CustomUser.objects.create(email=email, is_social_user=True, social_provider="Kakao", social_uid=profile_data.get('id'))
-                
-        return JsonResponse(profile_data)
+            
+        access_token = generateAccessToken(user)
+        refresh_token = generateRefreshToken(user)
+        
+        return JsonResponse(access_token.json())
     

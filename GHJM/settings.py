@@ -104,15 +104,15 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    ),
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',
-        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
-    ),
-}
+# REST_FRAMEWORK = {
+#     'DEFAULT_PERMISSION_CLASSES': (
+#         'rest_framework.permissions.IsAuthenticated',
+#     ),
+#     'DEFAULT_AUTHENTICATION_CLASSES': (
+#         'rest_framework_simplejwt.au thentication.JWTAuthentication',
+#     ),
+# }
+
 
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None        # username 필드 사용 x
 ACCOUNT_EMAIL_REQUIRED = True                   # email 필드 사용 o
@@ -122,12 +122,6 @@ ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
 # JWT Setting
 REST_USE_JWT = True
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=2),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-    'ROTATE_REFRESH_TOKENS': False,
-    'BLACKLIST_AFTER_ROTATION': True,
-}
 
 
 MIDDLEWARE = [
