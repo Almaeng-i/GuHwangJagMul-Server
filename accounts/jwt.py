@@ -10,7 +10,7 @@ def generateAccessToken(user_id):
     # JWT payload로 claim 설정
     payload = {
         'user_id': user_id,
-        'exp': datetime.now() + timedelta(days=1),  # 토큰 만료 시간 설정
+        'exp': datetime.now() + timedelta(minutes=5),  # 엑세스 토큰 만료 시간 설정
         'type': Access
     }
 
@@ -22,7 +22,7 @@ def generateAccessToken(user_id):
 def generateRefreshToken(user_id):
     payload = {
         'user_id': user_id,
-        'exp': datetime.now() + timedelta(days=1),  # 토큰 만료 시간 설정
+        'exp': datetime.now() + timedelta(days=30),  # 리프레시 토큰 만료 시간 설정
         'type': Refresh
     }
 
