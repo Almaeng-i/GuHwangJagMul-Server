@@ -5,7 +5,7 @@ from rest_framework import status
 from .models import CustomUser
 from django.views import View
 from django.core.exceptions import ObjectDoesNotExist
-from .jwt import generateAccessToken, generateRefreshToken
+from .jwt import generateAccessToken, generateRefreshToken, saveRefreshToken
 import requests
 
 # Create your views here.
@@ -49,11 +49,24 @@ class KakaoCallbackView(View):
             user.social_uid = profile_data.get('id')
             user.nickname = nickname
             user.save()
+            
+            
         except ObjectDoesNotExist:
             user = CustomUser.objects.create(email=email, is_social_user=True, social_provider="Kakao", social_uid=profile_data.get('id'))
-            
-        access_token = generateAccessToken(user)
-        refresh_token = generateRefreshToken(user)
         
-        return JsonResponse(access_token.json())
+        # user_id 값을 통해 access & refresh token 발급    
+        user_id = user.id
+        
+        access_token = generateAccessToken(user_id)
+        refresh_token = generateRefreshToken(user_id)
+        
+        # redis에 refresh token 저장
+        saveRefreshToken(user_id, refresh_token)
+        
+        response_data = {
+            'access_token': access_token,
+            'refresh_token': refresh_token
+        }
+        
+        return JsonResponse(response_data)
     
