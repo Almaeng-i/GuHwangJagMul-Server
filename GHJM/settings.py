@@ -54,10 +54,13 @@ KAKAO_SECRET_KEY = get_secret('KAKAO_SECRET_KEY', secrets)
 # BASE_URL
 SERVER_BASE_URL = get_secret('SERVER_BASE_URL', secrets)
 
+# Access Token Expire time
+ACCESS_EXPIRE_TIME = get_secret('ACCESS_EXPIRE_TIME', secrets)
+
 # Refresh Token Expire time
-REFRESH_EXPIRE_TIME = get_secret('REFRESH_EXPIRE_TIME', secrets)
+REFRESH_EXPIRE_DAY = get_secret('REFRESH_EXPIRE_DAY', secrets)
 
-
+ALGORITHM = get_secret('ALGORITHM', secrets)
 
 # Application definition
 
@@ -106,16 +109,6 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     }
 }
-
-# REST_FRAMEWORK = {
-#     'DEFAULT_PERMISSION_CLASSES': (
-#         'rest_framework.permissions.IsAuthenticated',
-#     ),
-#     'DEFAULT_AUTHENTICATION_CLASSES': (
-#         'rest_framework_simplejwt.au thentication.JWTAuthentication',
-#     ),
-# }
-
 
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None        # username 필드 사용 x
 ACCOUNT_EMAIL_REQUIRED = True                   # email 필드 사용 o

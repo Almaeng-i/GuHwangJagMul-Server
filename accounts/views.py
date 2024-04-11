@@ -59,13 +59,12 @@ class KakaoCallbackView(View):
         
         access_token = generateAccessToken(user_id)
         refresh_token = generateRefreshToken(user_id)
-        
-        # redis에 refresh token 저장
-        saveRefreshToken(user_id, refresh_token)
+        expire_time = saveRefreshToken(user_id, refresh_token)  # redis에 refresh token 값 저장
         
         response_data = {
             'access_token': access_token,
-            'refresh_token': refresh_token
+            'refresh_token': refresh_token,
+            'expire_time' : expire_time
         }
         
         return JsonResponse(response_data)

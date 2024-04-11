@@ -3,31 +3,38 @@ from datetime import datetime, timedelta
 from django.core.cache import cache
 import jwt
 
-Access = 'AccessToken'
-Refresh = 'RefreshToken'
+access = 'AccessToken'
+refresh = 'RefreshToken'
+algorithm = getattr(settings, 'ALGORITHM')
 
 def generateAccessToken(user_id):
     # JWT payload로 claim 설정
+    actMinutes = getattr(settings, 'ACCESS_EXPIRE_TIME')
+    actExpire_time = datetime.now() + timedelta(minutes=actMinutes),  # 엑세스 토큰 만료 시간 설정
     payload = {
         'user_id': user_id,
-        'exp': datetime.now() + timedelta(minutes=5),  # 엑세스 토큰 만료 시간 설정
-        'type': Access
+        'exp': actExpire_time,
+        'type': access
     }
 
     # JWT 토큰 생성
-    jwt_token = jwt.encode(payload, getattr(settings, 'SECRET_KEY'), algorithm='HS256')
+    jwt_token = jwt.encode(payload, getattr(settings, 'SECRET_KEY'), algorithm)
 
     return jwt_token
 
 def generateRefreshToken(user_id):
+    # 리프레시 토큰 만료 기간 설정
+    refDays = getattr(settings, 'REFRESH_EXPIRE_DAY')
+    refExpire_time = datetime.now() + timedelta(days=refDays)  
+    
     payload = {
         'user_id': user_id,
-        'exp': datetime.now() + timedelta(days=30),  # 리프레시 토큰 만료 시간 설정
-        'type': Refresh
+        'exp' : refExpire_time,
+        'type': refresh
     }
 
     # JWT 토큰 생성
-    jwt_token = jwt.encode(payload, getattr(settings, 'SECRET_KEY'), algorithm='HS256')
+    jwt_token = jwt.encode(payload, getattr(settings, 'SECRET_KEY'), algorithm)
 
     return jwt_token 
    
