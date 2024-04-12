@@ -58,7 +58,7 @@ SERVER_BASE_URL = get_secret('SERVER_BASE_URL', secrets)
 ACCESS_EXPIRE_TIME = get_secret('ACCESS_EXPIRE_TIME', secrets)
 
 # Refresh Token Expire time
-REFRESH_EXPIRE_DAY = get_secret('REFRESH_EXPIRE_DAY', secrets)
+REFRESH_EXPIRE_TIME = get_secret('REFRESH_EXPIRE_TIME', secrets)
 
 ALGORITHM = get_secret('ALGORITHM', secrets)
 
