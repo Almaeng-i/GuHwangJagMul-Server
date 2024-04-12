@@ -8,9 +8,10 @@ refresh = 'RefreshToken'
 algorithm = getattr(settings, 'ALGORITHM')
 
 def generateAccessToken(user_id):
-    # JWT payload로 claim 설정
-    actMinutes = getattr(settings, 'ACCESS_EXPIRE_TIME')
-    actExpire_time = datetime.now() + timedelta(minutes=actMinutes),  # 엑세스 토큰 만료 시간 설정
+    act_time = getattr(settings, 'ACCESS_EXPIRE_TIME')
+    actExpire_time = datetime.now() + timedelta(seconds=act_time)  # 엑세스 토큰 만료 시간 설정
+    print(actExpire_time)
+    
     payload = {
         'user_id': user_id,
         'exp': actExpire_time,
@@ -22,11 +23,11 @@ def generateAccessToken(user_id):
 
     return jwt_token
 
+
 def generateRefreshToken(user_id):
     # 리프레시 토큰 만료 기간 설정
-    refDays = getattr(settings, 'REFRESH_EXPIRE_DAY')
-    refExpire_time = datetime.now() + timedelta(days=refDays)  
-    
+    reftime = getattr(settings, 'REFRESH_EXPIRE_TIME')
+    refExpire_time = datetime.now() + timedelta(seconds=reftime)      
     payload = {
         'user_id': user_id,
         'exp' : refExpire_time,
@@ -38,12 +39,42 @@ def generateRefreshToken(user_id):
 
     return jwt_token 
    
+   
+def decodeToken(token):
+    try:
+        payload = jwt.decode(token, getattr(settings, 'SECRET_KEY'), algorithm)
+        return payload
+
+    # 토큰 만료시 
+    except jwt.ExpiredSignatureError:
+        return None
+    
+    # 유효하지 않은 토큰일 경우
+    except jwt.InvalidTokenError:
+        return None
+    
+def getTokenExp(token):
+    payload = decodeToken(token)
+    expire_time = payload.get('exp')
+    expire_time_dt = datetime.fromtimestamp(expire_time)
+    return expire_time_dt
+
+def getformatStrTokenExp(token):
+    expire_time_dt = getTokenExp(token)
+    expire_time_dt_str = expire_time_dt.strftime('%Y-%m-%d %H:%M:%S')
+    return expire_time_dt_str
+    
 
 def saveRefreshToken(user_id, refresh_token):
-    cache_key = user_id
-    cache_value = refresh_token
-    expire_time = getattr(settings, "REFRESH_EXPIRE_TIME")
+    refresh_token_expire_time = getTokenExp(refresh_token)
     
-    cache.set(key=cache_key, value=cache_value, timeout=expire_time)      # redis에 저장
-   
+    # 토큰 만료시간 - 현재 시간
+    expire_time = refresh_token_expire_time- datetime.now()  
     
+    # 초 단위로 변환
+    total_seconds = expire_time.days * 86400 + expire_time.seconds + expire_time.microseconds / 1000000
+    
+    # redis에 저장
+    cache.set(key=user_id, value=refresh_token, timeout=total_seconds)
+    
+

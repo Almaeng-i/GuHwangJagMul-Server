@@ -5,7 +5,7 @@ from rest_framework import status
 from .models import CustomUser
 from django.views import View
 from django.core.exceptions import ObjectDoesNotExist
-from .jwt import generateAccessToken, generateRefreshToken, saveRefreshToken
+from .jwt import generateAccessToken, generateRefreshToken, decodeToken, saveRefreshToken, getformatStrTokenExp
 import requests
 
 # Create your views here.
@@ -59,12 +59,15 @@ class KakaoCallbackView(View):
         
         access_token = generateAccessToken(user_id)
         refresh_token = generateRefreshToken(user_id)
-        expire_time = saveRefreshToken(user_id, refresh_token)  # redis에 refresh token 값 저장
+        access_expire_time_format = getformatStrTokenExp(access_token)
+        refresh_expire_time_format = getformatStrTokenExp(refresh_token)
+        saveRefreshToken(user_id, refresh_token)  # redis에 refresh token 값 저장
         
         response_data = {
             'access_token': access_token,
             'refresh_token': refresh_token,
-            'expire_time' : expire_time
+            'access_expire_time': access_expire_time_format,
+            'refresh_expire_time' : refresh_expire_time_format
         }
         
         return JsonResponse(response_data)
