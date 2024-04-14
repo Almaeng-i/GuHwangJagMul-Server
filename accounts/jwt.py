@@ -71,7 +71,7 @@ def save_refresh_token(user_id, refresh_token):
     expire_time = refresh_token_expire_time- datetime.now()  
     
     # 초 단위로 변환
-    total_seconds = expire_time.days * 86400 + expire_time.seconds + expire_time.microseconds / 1000000
+    total_seconds = expire_time.total_seconds()
     
     # redis에 저장
     cache.set(key=user_id, value=refresh_token, timeout=total_seconds)
