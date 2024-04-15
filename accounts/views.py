@@ -5,6 +5,7 @@ from rest_framework import status
 from .models import CustomUser
 from django.views import View
 from django.core.exceptions import ObjectDoesNotExist
+from .jwt import generate_access_token, generate_refresh_token, decode_token, get_token_exp, getformat_str_token_exp, save_refresh_token
 import requests
 
 # Create your views here.
@@ -14,6 +15,7 @@ def kakao_login(request):
     authorize_url = f"https://kauth.kakao.com/oauth/authorize?client_id={rest_api_key}&redirect_uri={redirect_uri}&response_type=code&scope=account_email"
     return redirect(authorize_url) 
 
+
 class KakaoCallbackView(View):
     def get(self, request):
         rest_api_key = getattr(settings, 'KAKAO_REST_API_KEY')
@@ -22,7 +24,7 @@ class KakaoCallbackView(View):
         
          # Access Token Request
         token_url = f"https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id={rest_api_key}&redirect_uri={redirect_uri}&code={code}"
-     
+        
         token_response = requests.post(token_url)
         token_data = token_response.json()
         
@@ -47,8 +49,27 @@ class KakaoCallbackView(View):
             user.social_uid = profile_data.get('id')
             user.nickname = nickname
             user.save()
+            
+            
         except ObjectDoesNotExist:
             user = CustomUser.objects.create(email=email, is_social_user=True, social_provider="Kakao", social_uid=profile_data.get('id'))
-                
-        return JsonResponse(profile_data)
+        
+        # user_id 값을 통해 access & refresh token 발급    
+        user_id = user.id
+        
+        # access & refresh token 발급 후 redis에 expire date 저장 
+        access_token = generate_access_token(user_id)
+        refresh_token = generate_refresh_token(user_id)
+        access_expire_time_format = getformat_str_token_exp(access_token)
+        refresh_expire_time_format = getformat_str_token_exp(refresh_token)
+        save_refresh_token(user_id, refresh_token)
+        
+        response_data = {
+            'access_token': access_token,
+            'refresh_token': refresh_token,
+            'access_expire_time': access_expire_time_format,
+            'refresh_expire_time' : refresh_expire_time_format
+        }
+        
+        return JsonResponse(response_data)
     

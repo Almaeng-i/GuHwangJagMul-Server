@@ -54,7 +54,13 @@ KAKAO_SECRET_KEY = get_secret('KAKAO_SECRET_KEY', secrets)
 # BASE_URL
 SERVER_BASE_URL = get_secret('SERVER_BASE_URL', secrets)
 
+# Access Token Expire time
+ACCESS_EXPIRE_TIME = get_secret('ACCESS_EXPIRE_TIME', secrets)
 
+# Refresh Token Expire time
+REFRESH_EXPIRE_TIME = get_secret('REFRESH_EXPIRE_TIME', secrets)
+
+ALGORITHM = get_secret('ALGORITHM', secrets)
 
 # Application definition
 
@@ -104,16 +110,6 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    ),
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',
-        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
-    ),
-}
-
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None        # username 필드 사용 x
 ACCOUNT_EMAIL_REQUIRED = True                   # email 필드 사용 o
 ACCOUNT_USERNAME_REQUIRED = False               # username 필드 사용 x
@@ -122,12 +118,6 @@ ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
 # JWT Setting
 REST_USE_JWT = True
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=2),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-    'ROTATE_REFRESH_TOKENS': False,
-    'BLACKLIST_AFTER_ROTATION': True,
-}
 
 
 MIDDLEWARE = [
@@ -170,6 +160,19 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
+    }
+}
+
+
+# Redis settings
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',     # cache.set() 사용시 자동 저장시켜줌.
+        'LOCATION': 'redis://127.0.0.1:6379',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+        
     }
 }
 
