@@ -8,6 +8,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from .jwt import generate_access_token, generate_refresh_token, decode_token, get_token_exp, getformat_str_token_exp, save_refresh_token
 import requests
 
+# middleware 동작을 확인하기 위한 test API
+def test_api(request):
+    print('test api')
+    return JsonResponse({'info': "test"})
+
 # Create your views here.
 def kakao_login(request):
     rest_api_key = getattr(settings, 'KAKAO_REST_API_KEY')
