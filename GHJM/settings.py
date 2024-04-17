@@ -130,6 +130,8 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     'allauth.account.middleware.AccountMiddleware',         # allauth middleware 추가
     'oauth2_provider.middleware.OAuth2TokenMiddleware',     # oauth middleware 추가
+    'accounts.middleware.AccessTokenMiddleware',
+    
 ]
 
 ROOT_URLCONF = "GHJM.urls"
