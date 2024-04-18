@@ -38,7 +38,7 @@ class AccessTokenMiddleware:
             id = payload.get('user_id')
 
             # 추출된 사용자 식별 정보를 사용하여 사용자를 가져옴.
-            user = CustomUser.objects.get(id = id)
+            user = CustomUser.objects.get(id=id)
             
             # 인증이 성공하면 요청에 사용자를 할당.
             request.user = user
