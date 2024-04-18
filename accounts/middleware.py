@@ -5,10 +5,12 @@ from jwt.exceptions import InvalidSignatureError, ExpiredSignatureError
 import datetime
 import jwt
 
+algorithm = getattr(settings, 'ALGORITHM')
+secret_key = getattr(settings, 'SECRET_KEY')
+
 class AccessTokenMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
-        print('middleware test')
     
     def __call__(self, request):
         path = request.path
@@ -20,9 +22,7 @@ class AccessTokenMiddleware:
         
         
         # 클라이언트의 요청에서 헤더에서 AccessToken을 추출.
-        authorization_header = request.META.get('HTTP_AUTHORIZATION')
-        algorithm = getattr(settings, 'ALGORITHM')
-        secret_key = getattr(settings, 'SECRET_KEY')
+        authorization_header = request.headers.get('AUTHORIZATION')
         
         try:
             token = authorization_header  # 인가코드
@@ -45,19 +45,16 @@ class AccessTokenMiddleware:
         
         except ValueError as e:
             error_message = str(e)
-            # 아스키 코드 -> false 지정 하여 user들에게 문자열 형식으로 오류 메시지 return
-            return JsonResponse({'error': error_message}, json_dumps_params={'ensure_ascii': False}) 
+            return JsonResponse({'error': error_message}) 
         
         except InvalidSignatureError:
-            return JsonResponse({'error' : '유효하지 않은 토큰 값 입니다.'}, json_dumps_params={'ensure_ascii': False})
+            return JsonResponse({'error' : '유효하지 않은 토큰 값 입니다.'})
         
         except ExpiredSignatureError:
-            return JsonResponse({'error' : '만료된 토큰 값 입니다.'}, json_dumps_params={'ensure_ascii': False})
+            return JsonResponse({'error' : '만료된 토큰 값 입니다.'})
 
-
-        response = self.get_response(request)   # views를 거친후에 처리됨.
-        return response
-  
+        return  self.get_response(request)   # views를 거친후에 처리됨.
+    
     # OAuth 관련 API Path인지 확인
     def is_oauth_related_path(self, path):
         if 'kakao' in path:
