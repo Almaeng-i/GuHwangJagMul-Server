@@ -13,10 +13,8 @@ class AccessTokenMiddleware:
         self.get_response = get_response
     
     def __call__(self, request):
-        path = request.path
-        
         # true면 실행
-        if self.is_oauth_related_path(path): 
+        if self.is_oauth_related_path(request.path): 
             response = self.get_response(request)
             return response
         
@@ -57,7 +55,7 @@ class AccessTokenMiddleware:
     
     # OAuth 관련 API Path인지 확인
     def is_oauth_related_path(self, path):
-        if 'kakao' in path:
+        if 'kakao' in path or 'refresh' in path:
             return True
         return False
         
