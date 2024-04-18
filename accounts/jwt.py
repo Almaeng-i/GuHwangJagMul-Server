@@ -13,7 +13,6 @@ def generate_access_token(user_id):
     # 엑세스 토큰 만료 시간 설정 
     # 한국시간으로 적용하기 위해 UTC - 9시간 -> 한국시간
     actExpire_time = datetime.now() + timedelta(seconds=act_time) - timedelta(hours=9)
-    print(actExpire_time)
     
     payload = {
         'user_id': user_id,
