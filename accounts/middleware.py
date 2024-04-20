@@ -14,7 +14,7 @@ class AccessTokenMiddleware:
     
     def __call__(self, request):
         # true면 실행
-        if self.is_oauth_related_path(request.path): 
+        if self.check_path_to_exclude_middleware(request.path): 
             response = self.get_response(request)
             return response
         
