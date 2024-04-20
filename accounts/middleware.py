@@ -53,10 +53,12 @@ class AccessTokenMiddleware:
 
         return  self.get_response(request)   # views를 거친후에 처리됨.
     
-    # OAuth 관련 API Path인지 확인
-    def is_oauth_related_path(self, path):
-        if 'kakao' in path or 'refresh' in path:
-            return True
+    # 미들웨어를 제외할 경로 탐색 -> Oauth, admin, refresh page
+    def check_path_to_exclude_middleware(self, path):
+        except_path = ['kakao', 'refresh', 'admin']
+        for each_path in except_path:
+            if each_path in path:
+                return True
         return False
         
     
