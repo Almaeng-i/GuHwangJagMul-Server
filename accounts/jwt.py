@@ -1,7 +1,8 @@
 from django.conf import settings
 from datetime import datetime, timedelta
 from django.core.cache import cache
-import jwt
+import jwt, requests
+
 
 access = 'AccessToken'
 refresh = 'RefreshToken'
@@ -9,7 +10,9 @@ algorithm = getattr(settings, 'ALGORITHM')
 
 def generate_access_token(user_id):
     act_time = getattr(settings, 'ACCESS_EXPIRE_TIME')
-    actExpire_time = datetime.now() + timedelta(seconds=act_time)  # 엑세스 토큰 만료 시간 설정
+    # 엑세스 토큰 만료 시간 설정 
+    # 한국시간으로 적용하기 위해 UTC - 9시간 -> 한국시간
+    actExpire_time = datetime.now() + timedelta(seconds=act_time) - timedelta(hours=9)
     
     payload = {
         'user_id': user_id,
@@ -22,11 +25,10 @@ def generate_access_token(user_id):
 
     return jwt_token
 
-
 def generate_refresh_token(user_id):
     # 리프레시 토큰 만료 기간 설정
     reftime = getattr(settings, 'REFRESH_EXPIRE_TIME')
-    ref_expire_time = datetime.now() + timedelta(seconds=reftime)      
+    ref_expire_time = datetime.now() + timedelta(seconds=reftime) - timedelta(hours=9)  
     payload = {
         'user_id': user_id,
         'exp' : ref_expire_time,
@@ -40,18 +42,10 @@ def generate_refresh_token(user_id):
    
    
 def decode_token(token):
-    try:
-        payload = jwt.decode(token, getattr(settings, 'SECRET_KEY'), algorithm)
-        return payload
+    payload = jwt.decode(token, getattr(settings, 'SECRET_KEY'), algorithm)
+    return payload
 
-    # 토큰 만료시 
-    except jwt.ExpiredSignatureError:
-        return None
-    
-    # 유효하지 않은 토큰일 경우
-    except jwt.InvalidTokenError:
-        return None
-    
+
 def get_token_exp(token):
     payload = decode_token(token)
     expire_time = payload.get('exp')
