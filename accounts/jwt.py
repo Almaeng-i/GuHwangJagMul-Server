@@ -42,18 +42,10 @@ def generate_refresh_token(user_id):
    
    
 def decode_token(token):
-    try:
-        payload = jwt.decode(token, getattr(settings, 'SECRET_KEY'), algorithm)
-        return payload
+    payload = jwt.decode(token, getattr(settings, 'SECRET_KEY'), algorithm)
+    return payload
 
-    # 토큰 만료시 
-    except jwt.ExpiredSignatureError as expired:
-        raise expired
-    
-    # 유효하지 않은 토큰일 경우
-    except jwt.InvalidTokenError as invaild:
-        raise invaild
-    
+
 def get_token_exp(token):
     payload = decode_token(token)
     expire_time = payload.get('exp')
