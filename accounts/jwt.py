@@ -1,7 +1,7 @@
 from django.conf import settings
 from datetime import datetime, timedelta
 from django.core.cache import cache
-import jwt, requests
+import jwt
 
 
 access = 'AccessToken'
@@ -52,11 +52,12 @@ def get_token_exp(token):
     expire_time_dt = datetime.fromtimestamp(expire_time)
     return expire_time_dt
 
+
 def getformat_str_token_exp(token):
     expire_time_dt = get_token_exp(token)
     expire_time_dt_str = expire_time_dt.strftime('%Y-%m-%d %H:%M:%S')
-    return expire_time_dt_str
-    
+    return expire_time_dt_str    
+        
 
 def save_refresh_token(user_id, refresh_token):
     refresh_token_expire_time = get_token_exp(refresh_token)
