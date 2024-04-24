@@ -53,7 +53,7 @@ def get_token_exp(token):
     return expire_time_dt
 
 
-def getformat_str_token_exp(token):
+def get_token_exp_in_str_format(token):
     expire_time_dt = get_token_exp(token)
     expire_time_dt_str = expire_time_dt.strftime('%Y-%m-%d %H:%M:%S')
     return expire_time_dt_str    

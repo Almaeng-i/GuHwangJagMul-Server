@@ -9,6 +9,8 @@ from django.core.cache import cache
 from .jwt import generate_access_token, generate_refresh_token, decode_token, get_token_exp, getformat_str_token_exp, save_refresh_token
 import requests
 
+refreshToken = 'refreshToken'
+
 # Create your views here.
 def kakao_login(request):
     rest_api_key = getattr(settings, 'KAKAO_REST_API_KEY')
@@ -71,16 +73,15 @@ class KakaoCallbackView(View):
             'access_expire_time': access_expire_time_format,
             'refresh_expire_time' : refresh_expire_time_format
         }
-        print(f'access token -> {access_token}')
         return JsonResponse(response_data)
     
-def reissued_token(request):
-    refresh_token = request.headers.get('refreshToken')
+def reissue_token(request):
+    refresh_token = request.headers.get(refreshToken)
     user_id = decode_token(refresh_token).get('user_id')
-    is_refresh_token = cache.get(user_id)
+    saved_refresh_token = cache.get(user_id)
     
     
-    if is_refresh_token != None:
+    if saved_refresh_token != None:
         access_token = generate_access_token(user_id)
         
         access_expire_time_format = getformat_str_token_exp(access_token)
@@ -88,13 +89,9 @@ def reissued_token(request):
         
         response_data = {
             'access_token': access_token,
-            'refresh_token': is_refresh_token,
-            'access_expire_time': access_expire_time_format,
-            'refresh_expire_time': refresh_expire_time_format
+            'access_expire_time': access_expire_time_format
         }
 
         
         return JsonResponse(response_data)
-    
-    
     
