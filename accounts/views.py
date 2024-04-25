@@ -6,7 +6,9 @@ from .models import CustomUser
 from django.views import View
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.cache import cache
+from jwt import DecodeError, ExpiredSignatureError, InvalidTokenError
 from .jwt import generate_access_token, generate_refresh_token, decode_token, get_token_exp,save_refresh_token, get_token_exp_in_str_format
+from .json_response_setting import JsonResponse
 import requests
 
 REFRESH_TOKEN = 'refresh-token'
@@ -77,9 +79,21 @@ class KakaoCallbackView(View):
     
 def reissue_token(request):
     refresh_token = request.headers.get(REFRESH_TOKEN)
-    user_id = decode_token(refresh_token).get('user_id')
-    saved_refresh_token = cache.get(user_id)
     
+    try:
+        user_id = decode_token(refresh_token).get('user_id')
+    
+    except DecodeError:
+        return JsonResponse({'error': '옳바르지 않은 토큰 형식입니다.'}, status=401)
+    
+    except ExpiredSignatureError:
+        return JsonResponse({'error': '토큰이 만료되었습니다.'}, status=401)
+    
+    except InvalidTokenError:
+        return JsonResponse({'error': '유효하지 않은 토큰 입니다.'}, status=401)
+    
+    # user_id에 해당하는 토큰을 가지고옴.
+    saved_refresh_token = cache.get(user_id)
     
     if saved_refresh_token != None:
         access_token = generate_access_token(user_id)
@@ -91,6 +105,5 @@ def reissue_token(request):
             'access_expire_time': access_expire_time_format
         }
 
-        
         return JsonResponse(response_data)
     
