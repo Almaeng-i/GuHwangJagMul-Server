@@ -6,10 +6,10 @@ from .models import CustomUser
 from django.views import View
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.cache import cache
-from .jwt import generate_access_token, generate_refresh_token, decode_token, get_token_exp, getformat_str_token_exp, save_refresh_token
+from .jwt import generate_access_token, generate_refresh_token, decode_token, get_token_exp,save_refresh_token, get_token_exp_in_str_format
 import requests
 
-refreshToken = 'refreshToken'
+REFRESH_TOKEN = 'refresh-token'
 
 # Create your views here.
 def kakao_login(request):
@@ -63,8 +63,8 @@ class KakaoCallbackView(View):
         # access & refresh token 발급 후 redis에 expire date 저장 
         access_token = generate_access_token(user_id)
         refresh_token = generate_refresh_token(user_id)
-        access_expire_time_format = getformat_str_token_exp(access_token)
-        refresh_expire_time_format = getformat_str_token_exp(refresh_token)
+        access_expire_time_format = get_token_exp_in_str_format(access_token)
+        refresh_expire_time_format = get_token_exp_in_str_format(refresh_token)
         save_refresh_token(user_id, refresh_token)
         
         response_data = {
@@ -76,7 +76,7 @@ class KakaoCallbackView(View):
         return JsonResponse(response_data)
     
 def reissue_token(request):
-    refresh_token = request.headers.get(refreshToken)
+    refresh_token = request.headers.get(REFRESH_TOKEN)
     user_id = decode_token(refresh_token).get('user_id')
     saved_refresh_token = cache.get(user_id)
     
@@ -84,8 +84,7 @@ def reissue_token(request):
     if saved_refresh_token != None:
         access_token = generate_access_token(user_id)
         
-        access_expire_time_format = getformat_str_token_exp(access_token)
-        refresh_expire_time_format = getformat_str_token_exp(refresh_token)
+        access_expire_time_format = get_token_exp_in_str_format(access_token)
         
         response_data = {
             'access_token': access_token,
