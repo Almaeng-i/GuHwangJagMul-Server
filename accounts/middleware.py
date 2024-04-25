@@ -2,6 +2,7 @@ from .models import CustomUser
 from django.http import JsonResponse
 from django.conf import settings
 from jwt.exceptions import InvalidSignatureError, ExpiredSignatureError
+from .json_response_setting import JsonResponse
 import datetime
 import jwt
 
