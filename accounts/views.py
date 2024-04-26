@@ -129,4 +129,4 @@ def logout(request):
     # user_id에 해당하는 refresh token을 redis에서 삭제
     cache.delete(user_id)
     
-    return JsonResponse({'message': '로그아웃 되었습니다.'})
+    return JsonResponse({'message': '로그아웃 되었습니다.'}, status=204)
