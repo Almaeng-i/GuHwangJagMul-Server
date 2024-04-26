@@ -76,7 +76,9 @@ class KakaoCallbackView(View):
             'refresh_expire_time' : refresh_expire_time_format
         }
         return JsonResponse(response_data)
+
     
+
 def reissue_token(request):
     refresh_token = request.headers.get(REFRESH_TOKEN)
     
@@ -106,4 +108,25 @@ def reissue_token(request):
         }
 
         return JsonResponse(response_data)
+
+
+# user가 로그아웃 버튼을 직접 클릭 했을 경우    
+def logout(request):
+    refresh_token = request.headers.get(REFRESH_TOKEN)
+     
+    try:
+        user_id = decode_token(refresh_token).get('user_id')
     
+    except DecodeError:
+        return JsonResponse({'error': '옳바르지 않은 토큰 형식입니다.'}, status=401)
+    
+    except ExpiredSignatureError:
+        return JsonResponse({'error': '토큰이 만료되었습니다.'}, status=401)
+    
+    except InvalidTokenError:
+        return JsonResponse({'error': '유효하지 않은 토큰 입니다.'}, status=401)
+    
+    # user_id에 해당하는 refresh token을 redis에서 삭제
+    cache.delete(user_id)
+    
+    return JsonResponse({'message': '로그아웃 되었습니다.'}, status=204)
