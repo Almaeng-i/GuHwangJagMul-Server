@@ -75,6 +75,7 @@ INSTALLED_APPS = [
     
     # My App
     "accounts",
+    "almaengI",
     
     # DRF 
     'rest_framework',
