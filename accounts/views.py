@@ -8,7 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.cache import cache
 from jwt import DecodeError, ExpiredSignatureError, InvalidTokenError
 from .jwt import generate_access_token, generate_refresh_token, decode_token, get_token_exp,save_refresh_token, get_token_exp_in_str_format
-from .json_response_setting import JsonResponse
+from GHJM.json_response_setting import JsonResponse
 import requests
 
 REFRESH_TOKEN = 'refresh-token'
