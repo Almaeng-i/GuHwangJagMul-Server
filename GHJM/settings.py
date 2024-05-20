@@ -75,6 +75,7 @@ INSTALLED_APPS = [
     
     # My App
     "accounts",
+    "almaengI",
     
     # DRF 
     'rest_framework',
@@ -124,7 +125,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
+    # "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -160,8 +161,12 @@ WSGI_APPLICATION = "GHJM.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": get_secret("MYSQL_NAME", secrets),
+        "USER" : get_secret("MYSQL_USER", secrets),
+        "PASSWORD" : get_secret("MYSQL_PW", secrets),
+        "HOST" : get_secret("MYSQL_HOST", secrets),
+        "PORT" : get_secret("MYSQL_PORT", secrets)
     }
 }
 
