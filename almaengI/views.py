@@ -15,8 +15,7 @@ def is_almaengi_type_valid(almaengi_type):
 
 @require_http_methods(["POST"])
 def save_almaengi(request):
-    print(request)
-    user_id = request.user
+    user = request.user
     almaengi_data = json.loads(request.body)
     almaengi_type = almaengi_data.get('almaengi_type')
     almaengi_name = almaengi_data.get('almaengi_name')
@@ -24,8 +23,17 @@ def save_almaengi(request):
     if not is_almaengi_type_valid(almaengi_type):
         return JsonResponse({'error': '잘못된 알맹이 타입입니다!'}) 
     
-    character = Character(user=user_id, character_type=almaengi_type, name=almaengi_name)
+    character = Character(user=user, character_type=almaengi_type, name=almaengi_name)
     character.save()
     
     return HttpResponse("Success!")
 
+
+@require_http_methods(["GET"])
+def response_almaengi_info(request):
+    user = request.user
+    characters = Character.objects.filter(user=user)
+    characters_list = list(characters.values('id', 'character_type', 'name', 'level'))
+    
+    return JsonResponse(characters_list, safe=False)
+    
