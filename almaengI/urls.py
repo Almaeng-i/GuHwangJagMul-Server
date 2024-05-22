@@ -5,5 +5,5 @@ from almaengI import views
 
 urlpatterns = [
     path('save/', views.save_almaengi),
-    path('info/', views.response_almaengi_info)
+    path('mycollection/', views.response_almaengi_info)
 ]
