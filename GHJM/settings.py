@@ -76,6 +76,7 @@ INSTALLED_APPS = [
     # My App
     "accounts",
     "almaengI",
+    "userprofile",
     
     # DRF 
     'rest_framework',
@@ -94,7 +95,26 @@ INSTALLED_APPS = [
     
     # oauth2
     'oauth2_provider',
+    
+    # AWS 
+    'storages',
 ]
+
+# AWS Setting
+AWS_REGION = get_secret('AWS_REGION', secrets)
+AWS_STORAGE_BUCKET_NAME = get_secret('AWS_STORAGE_BUCKET_NAME', secrets)
+AWS_ACCESS_KEY = get_secret('AWS_ACCESS_KEY', secrets) 
+AWS_SECRET_ACCESS_KEY = get_secret('AWS_SECRET_ACCESS_KEY', secrets) 
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.%s.amazonaws.com' % (AWS_STORAGE_BUCKET_NAME, AWS_REGION)
+AWS_BUCKET_ROOT_FOLDER_NAME = get_secret('AWS_BUCKET_ROOT_FOLDER_NAME', secrets)
+DEFAULT_FILE_STORAGE = get_secret('DEFAULT_FILE_STORAGE', secrets)
+MEDIA_URL = 'https://%s/media/' % AWS_S3_CUSTOM_DOMAIN
+
+
+
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = False     
+AWS_QUERYSTRING_AUTH = False       # 정적인 url 생성하여 시간이 지나도 img에 접근 가능하게끔.
 
 
 SITE_ID = 1
