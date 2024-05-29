@@ -1,10 +1,10 @@
 from django.shortcuts import get_object_or_404
 from userprofile.models import UserProfile
-from django.http import JsonResponse, HttpResponse
+from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
 from GHJM import settings
+from GHJM.json_response_setting import JsonResponse
 from thirdparty.views import receive_img
-from accounts.models import CustomUser
 import boto3, uuid, requests, json
 
 AWS_ACCESS_KEY = getattr(settings, 'AWS_ACCESS_KEY')
@@ -43,5 +43,15 @@ def update_user_profile(request):
     return HttpResponse("Success!", status=204)
     
     
+    
+@require_http_methods(["GET"])
+def response_userprofile(request):
+    user = request.user
+    userprofile = UserProfile.objects.filter(user=user).first() # first 키워드를 사용해 1개의 userprofile 객체 반환.
+    id = userprofile.id
+    intro = userprofile.user_introduction
+    img_url = userprofile.profile_picture_url
+    
+    return JsonResponse({'id': id, 'intro': intro, 'img_url': img_url})
     
     
