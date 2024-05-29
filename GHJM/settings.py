@@ -77,6 +77,7 @@ INSTALLED_APPS = [
     "accounts",
     "almaengI",
     "userprofile",
+    'thirdparty',
     
     # DRF 
     'rest_framework',
@@ -109,6 +110,8 @@ AWS_S3_CUSTOM_DOMAIN = '%s.s3.%s.amazonaws.com' % (AWS_STORAGE_BUCKET_NAME, AWS_
 AWS_BUCKET_ROOT_FOLDER_NAME = get_secret('AWS_BUCKET_ROOT_FOLDER_NAME', secrets)
 DEFAULT_FILE_STORAGE = get_secret('DEFAULT_FILE_STORAGE', secrets)
 MEDIA_URL = 'https://%s/media/' % AWS_S3_CUSTOM_DOMAIN
+DEFAULT_PROFILE_URL = get_secret('DEFAULT_PROFILE_URL', secrets)
+RECEIVE_IMG_ENDPOINT = get_secret('RECEIVE_IMG_ENDPOINT', secrets)
 
 
 
