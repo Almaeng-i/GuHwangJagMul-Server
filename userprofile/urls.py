@@ -3,5 +3,7 @@ from userprofile import views
 
 
 urlpatterns = [
-    path('', views.save_user_profile)
+    path('', views.create_user_profile),
+    path('update/', views.update_user_profile)
+
 ]
