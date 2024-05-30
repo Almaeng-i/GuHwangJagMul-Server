@@ -40,7 +40,7 @@ def update_user_profile(request):
     
     UserProfile.objects.filter(id=id).update(user_introduction = intro, profile_picture_url = img_url)
     
-    return HttpResponse("Success!", status=204)
+    return HttpResponse(status=204)
     
     
     
