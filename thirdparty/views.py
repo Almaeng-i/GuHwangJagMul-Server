@@ -2,7 +2,8 @@ from django.http import JsonResponse
 from GHJM import settings
 from django.views import View
 from accounts.models import CustomUser
-from django.views.decorators.http import require_http_methods
+from django.views.decorators.http import require_http_methods 
+from botocore.exceptions import NoCredentialsError, PartialCredentialsError, ClientError
 import boto3, uuid
 # Create your views here.
 AWS_ACCESS_KEY = getattr(settings, 'AWS_ACCESS_KEY')
@@ -19,6 +20,10 @@ def receive_img(request):
     if img != None:
         uploader = ProfileUpload(img)
         img_url = uploader.upload()
+        
+        if isinstance(img_url, JsonResponse):   # exception 발생하는지 check
+            print(img_url)
+            return img_url      
     
     else:
         img_url = DEFAULT_PROFILE_URL
@@ -32,21 +37,28 @@ class ProfileUpload(View):
         self.file = file
     
     def upload(self):       # 사용할 서비스, 액세스, 시크릿 키 순서
-        s3_client = boto3.client(
-            's3',       
-            aws_access_key_id = AWS_ACCESS_KEY,
-            aws_secret_access_key = AWS_SECRET_KEY
-        )
-        key = f'{AWS_BUCKET_ROOT_FOLDER_NAME}/{uuid.uuid1().hex}'
-    
-        s3_client.upload_fileobj(
-            self.file,
-            AWS_STORAGE_BUCKET_NAME,
-            key,
-            ExtraArgs={
-                "ContentType": self.file.content_type,
-            }
-        )   
+        try:
+            s3_client = boto3.client(
+                's3',       
+                aws_access_key_id = AWS_ACCESS_KEY,
+                aws_secret_access_key = AWS_SECRET_KEY
+            )
+            key = f'{AWS_BUCKET_ROOT_FOLDER_NAME}/{uuid.uuid1().hex}'
+
+            print(key)
+
+            s3_client.upload_fileobj(
+                self.file,
+                AWS_STORAGE_BUCKET_NAME,
+                key,
+                ExtraArgs={
+                    "ContentType": self.file.content_type,
+                }
+            )   
+        
+        except ClientError as e:
+            return JsonResponse({"error": f"Client error: {e.response['Error']['Code']}"}, status=400)
+        
         
         s3_img_url = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{key}'
         
