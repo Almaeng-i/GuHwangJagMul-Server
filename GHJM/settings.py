@@ -112,7 +112,7 @@ DEFAULT_FILE_STORAGE = get_secret('DEFAULT_FILE_STORAGE', secrets)
 MEDIA_URL = 'https://%s/media/' % AWS_S3_CUSTOM_DOMAIN
 DEFAULT_PROFILE_URL = get_secret('DEFAULT_PROFILE_URL', secrets)
 RECEIVE_IMG_ENDPOINT = get_secret('RECEIVE_IMG_ENDPOINT', secrets)
-
+BASE_S3_URL = get_secret('BASE_S3_URL', secrets)
 
 
 AWS_S3_FILE_OVERWRITE = False
