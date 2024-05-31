@@ -19,11 +19,7 @@ def receive_img(request):
     
     if img != None:
         uploader = ProfileUpload(img)
-        img_url = uploader.upload()
-        
-        if isinstance(img_url, JsonResponse):   # exception 발생하는지 check
-            print(img_url)
-            return img_url      
+        img_url = uploader.upload() 
     
     else:
         img_url = DEFAULT_PROFILE_URL
@@ -44,8 +40,6 @@ class ProfileUpload(View):
                 aws_secret_access_key = AWS_SECRET_KEY
             )
             key = f'{AWS_BUCKET_ROOT_FOLDER_NAME}/{uuid.uuid1().hex}'
-
-            print(key)
 
             s3_client.upload_fileobj(
                 self.file,
