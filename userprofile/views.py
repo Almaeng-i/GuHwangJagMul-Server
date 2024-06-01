@@ -81,14 +81,20 @@ def update_user_profile(request):
 def response_userprofile(request):
     user = request.user
     userprofile = UserProfile.objects.filter(user=user).first() # first 키워드를 사용해 1개의 userprofile 객체 반환.
-    id = userprofile.id
-    intro = userprofile.user_introduction
-    img_url = userprofile.profile_picture_url
+    
     
     try:
         if userprofile != None:
+            id = userprofile.id
+            intro = userprofile.user_introduction
+            img_url = userprofile.profile_picture_url
+            
             return JsonResponse({'id': id, 'intro': intro, 'img_url': img_url})
-    except BaseException:
-        return JsonResponse({'error': f'{user}에 대한 userprofile을 찾을 수 없습니다.'})
+        
+        else:
+            raise AttributeError
+        
+    except AttributeError:
+        return JsonResponse({'error': f'{user}에 대한 userprofile을 찾을 수 없습니다.'}, status=404)
     
     
