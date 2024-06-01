@@ -27,7 +27,7 @@ def receive_img(request):
     return JsonResponse({'img_url': img_url})
 
 
-class ProfileUpload(View):
+class ProfileUpload:
     
     def __init__(self, file):
         self.file = file
