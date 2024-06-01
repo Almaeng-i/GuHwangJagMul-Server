@@ -17,12 +17,15 @@ DEFAULT_PROFILE_URL = getattr(settings, 'DEFAULT_PROFILE_URL')
 def receive_img(request):
     img = request.FILES.get('profile_picture_url')
     
-    if img != None:
-        uploader = ProfileUpload(img)
-        img_url = uploader.upload() 
+    img_url = DEFAULT_PROFILE_URL
     
-    else:
-        img_url = DEFAULT_PROFILE_URL
+    if img != None:
+        try:
+            uploader = ProfileUpload(img)
+            img_url = uploader.upload() 
+        except ClientError as e:
+            return JsonResponse({"error": f"Server error: {e.response['Error']['Code']}"}, status=500)
+        
     
     return JsonResponse({'img_url': img_url})
 
@@ -51,7 +54,7 @@ class ProfileUpload:
             )   
         
         except ClientError as e:
-            return JsonResponse({"error": f"Client error: {e.response['Error']['Code']}"}, status=400)
+            return e
         
         
         s3_img_url = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{key}'
