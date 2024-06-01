@@ -33,7 +33,7 @@ def is_vaild_url(url):
         
         return False
     
-    except ValueError:
+    except BaseException:       # 파이썬 최상위 Exception -> 모든 Error Catch
         return False
 
 @require_http_methods(['POST'])
@@ -88,7 +88,7 @@ def response_userprofile(request):
     try:
         if userprofile != None:
             return JsonResponse({'id': id, 'intro': intro, 'img_url': img_url})
-    except ValueError :
+    except BaseException:
         return JsonResponse({'error': f'{user}에 대한 userprofile을 찾을 수 없습니다.'})
     
     
