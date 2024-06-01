@@ -19,7 +19,6 @@ RECEIVE_IMG_ENDPOINT = getattr(settings, 'RECEIVE_IMG_ENDPOINT')
 
 
 def is_vaild_url(url):
-    parse_url = urlparse(url)
     try:
         result = urlparse(url)
         # scheme과 netloc이 존재하는지 확인. (ex ->  http://example.com)
@@ -33,7 +32,7 @@ def is_vaild_url(url):
         
         return False
     
-    except BaseException:       # 파이썬 최상위 Exception -> 모든 Error Catch
+    except ValueError:       # 분석할 구문이 존재하지 않을 경우
         return False
 
 @require_http_methods(['POST'])
