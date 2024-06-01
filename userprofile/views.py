@@ -28,12 +28,11 @@ def is_vaild_url(url):
                 # 접근 가능성 확인
                 with urlopen(url) as response:
                     return response.status == 200
-            except HTTPError:
+            except (HTTPError, URLError):
                 return False
-            except URLError:
-                return False
-        else:
-            return False
+        
+        return False
+    
     except ValueError:
         return False
 
