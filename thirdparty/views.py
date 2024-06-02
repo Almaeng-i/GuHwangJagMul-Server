@@ -24,7 +24,7 @@ def receive_img(request):
             uploader = ProfileUpload(img)
             img_url = uploader.upload() 
         except ClientError as e:
-            return JsonResponse({"error": f"Server error: {e.response['Error']['Code']}"}, status=500)
+            return JsonResponse({"error": f"Server error: {e.response['Error']['Code']}"}, status=400)
         
     
     return JsonResponse({'img_url': img_url})
@@ -36,26 +36,21 @@ class ProfileUpload:
         self.file = file
     
     def upload(self):       # 사용할 서비스, 액세스, 시크릿 키 순서
-        try:
-            s3_client = boto3.client(
-                's3',       
-                aws_access_key_id = AWS_ACCESS_KEY,
-                aws_secret_access_key = AWS_SECRET_KEY
-            )
-            key = f'{AWS_BUCKET_ROOT_FOLDER_NAME}/{uuid.uuid1().hex}'
+        s3_client = boto3.client(
+            's3',       
+            aws_access_key_id = AWS_ACCESS_KEY,
+            aws_secret_access_key = AWS_SECRET_KEY
+        )
+        key = f'{AWS_BUCKET_ROOT_FOLDER_NAME}/{uuid.uuid1().hex}'
 
-            s3_client.upload_fileobj(
-                self.file,
-                AWS_STORAGE_BUCKET_NAME,
-                key,
-                ExtraArgs={
-                    "ContentType": self.file.content_type,
-                }
-            )   
-        
-        except ClientError as e:
-            return e
-        
+        s3_client.upload_fileobj(
+            self.file,
+            AWS_STORAGE_BUCKET_NAME,
+            key,
+            ExtraArgs={
+                "ContentType": self.file.content_type,
+            }
+        )   
         
         s3_img_url = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{key}'
         
