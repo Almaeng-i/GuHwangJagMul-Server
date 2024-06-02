@@ -22,17 +22,13 @@ def is_vaild_url(url):
     try:
         result = urlparse(url)
         # scheme과 netloc이 존재하는지 확인. (ex ->  http://example.com)
-        if all([result.scheme, result.netloc]):
-            try:
-                # 접근 가능성 확인
-                with urlopen(url) as response:
-                    return response.status == 200
-            except (HTTPError, URLError):
-                return False
-        
-        return False
-    
-    except ValueError:       # 분석할 구문이 존재하지 않을 경우
+        if not all([result.scheme, result.netloc]):
+            return False
+            
+        # 접근 가능성 확인
+        with urlopen(url) as response:
+            return response.status == 200
+    except (ValueError, HTTPError, URLError):  # 분석할 구문이 존재하지 않을 경우 혹은 요청 실패
         return False
 
 @require_http_methods(['POST'])
@@ -48,13 +44,12 @@ def create_user_profile(request):
     img_url = request_data.get('profile_picture_url')       # client에게 값을 가져옴
     
     
-    if is_vaild_url(img_url):
-        user_profile = UserProfile(user=user, profile_picture_url=img_url, user_introduction=intro)
-        user_profile.save()
-        return HttpResponse("Success!")
-    
-    else:
+    if not is_vaild_url(img_url):
         return JsonResponse({'error': '잘못된 url 형식입니다.'}, status=400)
+        
+    user_profile = UserProfile(user=user, profile_picture_url=img_url, user_introduction=intro)
+    user_profile.save()
+    return HttpResponse("Success!")
         
     
    
@@ -67,12 +62,11 @@ def update_user_profile(request):
     intro = request_data.get('user_introduction')
     img_url = request_data.get('profile_picture_url')
     
-    if is_vaild_url(img_url): 
-        UserProfile.objects.filter(id=id).update(user_introduction = intro, profile_picture_url = img_url)
-        return HttpResponse(status=204)    
-    
-    else:
-        return JsonResponse({'error': '잘못된 url 형식입니다.'}, status=400)       
+    if not is_vaild_url(img_url): 
+        return JsonResponse({'error': '잘못된 url 형식입니다.'}, status=400)    
+        
+    UserProfile.objects.filter(id=id).update(user_introduction = intro, profile_picture_url = img_url)
+    return HttpResponse(status=204)    
         
     
     
@@ -82,18 +76,13 @@ def response_userprofile(request):
     userprofile = UserProfile.objects.filter(user=user).first() # first 키워드를 사용해 1개의 userprofile 객체 반환.
     
     
-    try:
-        if userprofile != None:
-            id = userprofile.id
-            intro = userprofile.user_introduction
-            img_url = userprofile.profile_picture_url
-            
-            return JsonResponse({'id': id, 'intro': intro, 'img_url': img_url})
-        
-        else:
-            raise AttributeError
-        
-    except AttributeError:
+    if userprofile == None:
         return JsonResponse({'error': f'{user}에 대한 userprofile을 찾을 수 없습니다.'}, status=404)
+        
+    id = userprofile.id
+    intro = userprofile.user_introduction
+    img_url = userprofile.profile_picture_url
+    
+    return JsonResponse({'id': id, 'intro': intro, 'img_url': img_url})
     
     
