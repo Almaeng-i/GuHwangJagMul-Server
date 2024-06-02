@@ -21,5 +21,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path('accounts/', include("accounts.urls")),
     path('almaengi/', include('almaengI.urls')),
+    path('userprofile/', include('userprofile.urls')),
+    path('s3-bucket/', include('thirdparty.urls'))
 ]
 
