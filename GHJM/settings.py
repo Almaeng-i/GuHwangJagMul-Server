@@ -18,6 +18,8 @@ from datetime import timedelta      # JWT 사용됨
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent
 
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
 # secret key path
 secret_file = os.path.join(BASE_DIR, 'secrets.json')
 
@@ -38,9 +40,9 @@ def get_secret(setting, secrets):
 SECRET_KEY = get_secret("SECRET_KEY",secrets)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = get_secret("DEBUG", secrets)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']   # default : []
 
 KAKAO_REST_API_KEY = get_secret('KAKAO_REST_API_KEY', secrets)
 STATE = "random_string"        # user의 로그인 여부를 판단하기 위한 코드
@@ -145,6 +147,7 @@ REST_USE_JWT = True
 
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -155,7 +158,7 @@ MIDDLEWARE = [
     'allauth.account.middleware.AccountMiddleware',         # allauth middleware 추가
     'oauth2_provider.middleware.OAuth2TokenMiddleware',     # oauth middleware 추가
     'accounts.middleware.AccessTokenMiddleware',
-    
+    'whitenoise.middleware.WhiteNoiseMiddleware'
 ]
 
 ROOT_URLCONF = "GHJM.urls"
