@@ -26,14 +26,32 @@ jobs:
           - 3306:3306
 
     env:
-      DATABASE_URL: mysql://${{ secrets.MYSQL_USER }}:${{ secrets.MYSQL_PW }}@${{ secrets.MYSQL_HOST }}:${{ secrets.MYSQL_PORT }}/${{ secrets.MYSQL_NAME }}
-      DJANGO_SECRET: ${{ secrets.SECRET_KEY }}
-      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
-      AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
+      KAKAO_CALLBACK_URI: ${{ secrets.KAKAO_CALLBACK_URI }}
+      KAKAO_LOGIN_URI: ${{ secrets.KAKAO_LOGIN_URI }}
+      KAKAO_SECRET_KEY: ${{ secrets.KAKAO_SECRET_KEY }}
+      SERVER_BASE_URL: ${{ secrets.SERVER_BASE_URL }}
+      ACCESS_EXPIRE_TIME: ${{ secrets.ACCESS_EXPIRE_TIME }}
+      REFRESH_EXPIRE_TIME: ${{ secrets.REFRESH_EXPIRE_TIME }}
+      ALGORITHM: ${{ secrets.ALGORITHM }}
+      MYSQL_NAME: ${{ secrets.MYSQL_NAME }}
+      MYSQL_USER: ${{ secrets.MYSQL_USER }}
+      MYSQL_PW: ${{ secrets.MYSQL_PW }}
+      MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
+      MYSQL_PORT: ${{ secrets.MYSQL_PORT }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
       AWS_STORAGE_BUCKET_NAME: ${{ secrets.AWS_STORAGE_BUCKET_NAME }}
       AWS_BUCKET_ROOT_FOLDER_NAME: ${{ secrets.AWS_BUCKET_ROOT_FOLDER_NAME }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_S3_CUSTOM_DOMAIN: ${{ secrets.AWS_S3_CUSTOM_DOMAIN }}
+      DEFAULT_FILE_STORAGE: ${{ secrets.DEFAULT_FILE_STORAGE }}
+      MEDIA_URL: ${{ secrets.MEDIA_URL }}
       DEFAULT_PROFILE_URL: ${{ secrets.DEFAULT_PROFILE_URL }}
-      AWS_REGION: ${{ secrets.AWS_REGION }}
+      RECEIVE_IMG_ENDPOINT: ${{ secrets.RECEIVE_IMG_ENDPOINT }}
+      BASE_S3_URL: ${{ secrets.BASE_S3_URL }}
+      DEBUG: false  # 배포시에는 false로 설정
 
     steps:
     - name: Checkout code
