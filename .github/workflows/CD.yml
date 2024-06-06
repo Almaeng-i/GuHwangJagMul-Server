@@ -65,8 +65,70 @@ jobs:
         uses: cloudtype-github-actions/deploy@v1
         with:
           token: ${{ secrets.CLOUDTYPE_TOKEN }}
-          project: ${{ secrets.CLOUDTYPE_PROJECT_NAME }}  # 실제 프로젝트 이름으로 변경
+          project: ${{ secrets.CLOUDTYPE_PROJECT_NAME }}
           stage: main
+          yaml: >
+            name: ${{ secrets.CLOUDTYPE_PROJECT_NAME }}
+            app: python@3.9
+            options:
+              ports: 8000
+              env:
+                - name: SECRET_KEY
+                  value: ${{ secrets.SECRET_KEY }}
+                - name: KAKAO_REST_API_KEY
+                  value: ${{ secrets.KAKAO_REST_API_KEY }}
+                - name: KAKAO_CALLBACK_URI
+                  value: ${{ secrets.KAKAO_CALLBACK_URI }}
+                - name: KAKAO_LOGIN_URI
+                  value: ${{ secrets.KAKAO_LOGIN_URI }}
+                - name: KAKAO_SECRET_KEY
+                  value: ${{ secrets.KAKAO_SECRET_KEY }}
+                - name: SERVER_BASE_URL
+                  value: ${{ secrets.SERVER_BASE_URL }}
+                - name: ACCESS_EXPIRE_TIME
+                  value: ${{ secrets.ACCESS_EXPIRE_TIME }}
+                - name: REFRESH_EXPIRE_TIME
+                  value: ${{ secrets.REFRESH_EXPIRE_TIME }}
+                - name: ALGORITHM
+                  value: ${{ secrets.ALGORITHM }}
+                - name: MYSQL_NAME
+                  value: ${{ secrets.MYSQL_NAME }}
+                - name: MYSQL_USER
+                  value: ${{ secrets.MYSQL_USER }}
+                - name: MYSQL_PW
+                  value: ${{ secrets.MYSQL_PW }}
+                - name: MYSQL_HOST
+                  value: ${{ secrets.MYSQL_HOST }}
+                - name: MYSQL_PORT
+                  value: ${{ secrets.MYSQL_PORT }}
+                - name: AWS_REGION
+                  value: ${{ secrets.AWS_REGION }}
+                - name: AWS_STORAGE_BUCKET_NAME
+                  value: ${{ secrets.AWS_STORAGE_BUCKET_NAME }}
+                - name: AWS_BUCKET_ROOT_FOLDER_NAME
+                  value: ${{ secrets.AWS_BUCKET_ROOT_FOLDER_NAME }}
+                - name: AWS_ACCESS_KEY_ID
+                  value: ${{ secrets.AWS_ACCESS_KEY }}
+                - name: AWS_SECRET_ACCESS_KEY
+                  value: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                - name: AWS_S3_CUSTOM_DOMAIN
+                  value: ${{ secrets.AWS_S3_CUSTOM_DOMAIN }}
+                - name: DEFAULT_FILE_STORAGE
+                  value: ${{ secrets.DEFAULT_FILE_STORAGE }}
+                - name: MEDIA_URL
+                  value: ${{ secrets.MEDIA_URL }}
+                - name: DEFAULT_PROFILE_URL
+                  value: ${{ secrets.DEFAULT_PROFILE_URL }}
+                - name: RECEIVE_IMG_ENDPOINT
+                  value: ${{ secrets.RECEIVE_IMG_ENDPOINT }}
+                - name: BASE_S3_URL
+                  value: ${{ secrets.BASE_S3_URL }}
+                - name: DEBUG
+                  value: ${{ secrets.DEBUG }}
+            context:
+              git:
+                url: git@github.com:${{ github.repository }}.git
+                ref: ${{ github.ref }}
     
       - name: Checkout code
         uses: actions/checkout@v2
