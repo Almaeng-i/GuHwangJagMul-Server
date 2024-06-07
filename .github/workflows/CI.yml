@@ -38,6 +38,7 @@ jobs:
       with:
         name: "secrets.json"
         json: ${{ secrets.SECRET_JSON }}
+        run: echo "secrets.json=$json" >> $GITHUB_OUTPUT
 
         
 
