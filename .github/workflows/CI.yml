@@ -22,19 +22,23 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-
    
-    - name: Create secrets.json file if not exists
+    - name: Check if secrets.json exists
       run: |
-        if [ ! -f GHJM/secrets.json ]; then
-          echo "${{ secrets.SECRET_JSON }}" > GHJM/secrets.json
-        else
+        if [ -f secrets.json ]; then
           echo "secrets.json already exists. Skipping creation."
-        fi     # endif
+        else
+          echo "secrets.json does not exist. Proceeding with JSON creation."
+        fi
 
-    - name: Verify secrets.json content
-      run: |
-        cat GHJM/secrets.json | python -m json.tool
+    - name: Create secrets.json
+      id: create-json
+      if: success() && !cancelled()
+      uses: jsdaniell/create-json@1.1.2
+      with:
+        name: "secrets.json"
+        json: ${{ secrets.SECRET_JSON }}
+
         
 
     # test 명령어로 모든 app test
