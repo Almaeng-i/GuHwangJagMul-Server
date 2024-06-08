@@ -38,7 +38,10 @@ jobs:
       with:
         name: "secrets.json"
         json: ${{ secrets.SECRET_JSON }}
-        run: echo "secrets.json=$json" >> $GITHUB_OUTPUT
+
+    - name: Set secrets.json path as output
+      if: steps.create-json.outputs.success == 'true'
+      run: echo "secrets_path=GHJM/secrets.json" >> $GITHUB_OUTPUT
 
         
 
