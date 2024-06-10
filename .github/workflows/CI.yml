@@ -42,13 +42,13 @@ jobs:
 
     - name: Set secrets.json path as output
       if: steps.create-json.outputs.success == 'true'
-      run: echo "secrets_path=${{ github.workspace }}/GHJM/secrets.json" >> $GITHUB_ENV
+      run: echo "SECRETS_PATH=${{ github.workspace }}/GHJM/secrets.json" >> $GITHUB_ENV
         
 
     # test 명령어로 모든 app test
     - name: Run tests
       env:
-         SECRETS_PATH: ${{ secrets_path }}
+         SECRETS_PATH: ${{ env.SECRETS_PATH }}
       run: |
         python manage.py test
 
