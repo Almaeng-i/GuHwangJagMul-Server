@@ -14,9 +14,15 @@ from django.core.exceptions import ImproperlyConfigured
 from pathlib import Path
 from datetime import timedelta      # JWT 사용됨
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent
+
+if os.getenv('CI'):
+    BASE_DIR = Path(__file__).resolve().parent.parent
+else:
+    BASE_DIR = Path(__file__).resolve().parent
+
+
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # secret key path
 secret_file = os.path.join(BASE_DIR, 'secrets.json')
@@ -38,9 +44,9 @@ def get_secret(setting, secrets):
 SECRET_KEY = get_secret("SECRET_KEY",secrets)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = get_secret("DEBUG", secrets)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']   # default : []
 
 KAKAO_REST_API_KEY = get_secret('KAKAO_REST_API_KEY', secrets)
 STATE = "random_string"        # user의 로그인 여부를 판단하기 위한 코드
@@ -75,6 +81,9 @@ INSTALLED_APPS = [
     
     # My App
     "accounts",
+    "almaengI",
+    "userprofile",
+    'thirdparty',
     
     # DRF 
     'rest_framework',
@@ -93,7 +102,30 @@ INSTALLED_APPS = [
     
     # oauth2
     'oauth2_provider',
+    
+    # AWS 
+    'storages',
 ]
+
+# AWS Setting
+AWS_REGION = get_secret('AWS_REGION', secrets)
+AWS_STORAGE_BUCKET_NAME = get_secret('AWS_STORAGE_BUCKET_NAME', secrets)
+AWS_ACCESS_KEY = get_secret('AWS_ACCESS_KEY', secrets) 
+AWS_SECRET_ACCESS_KEY = get_secret('AWS_SECRET_ACCESS_KEY', secrets) 
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.%s.amazonaws.com' % (AWS_STORAGE_BUCKET_NAME, AWS_REGION)
+AWS_BUCKET_ROOT_FOLDER_NAME = get_secret('AWS_BUCKET_ROOT_FOLDER_NAME', secrets)
+DEFAULT_FILE_STORAGE = get_secret('DEFAULT_FILE_STORAGE', secrets)
+MEDIA_URL = 'https://%s/media/' % AWS_S3_CUSTOM_DOMAIN
+DEFAULT_PROFILE_URL = get_secret('DEFAULT_PROFILE_URL', secrets)
+RECEIVE_IMG_ENDPOINT = get_secret('RECEIVE_IMG_ENDPOINT', secrets)
+BASE_S3_URL = get_secret('BASE_S3_URL', secrets)
+
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = False     
+AWS_QUERYSTRING_AUTH = False       # 정적인 url 생성하여 시간이 지나도 img에 접근 가능하게끔.
 
 
 SITE_ID = 1
@@ -121,15 +153,18 @@ REST_USE_JWT = True
 
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
+    # "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     'allauth.account.middleware.AccountMiddleware',         # allauth middleware 추가
     'oauth2_provider.middleware.OAuth2TokenMiddleware',     # oauth middleware 추가
+    'accounts.middleware.AccessTokenMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware'
 ]
 
 ROOT_URLCONF = "GHJM.urls"
@@ -158,8 +193,12 @@ WSGI_APPLICATION = "GHJM.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": get_secret("MYSQL_NAME", secrets),
+        "USER" : get_secret("MYSQL_USER", secrets),
+        "PASSWORD" : get_secret("MYSQL_PW", secrets),
+        "HOST" : get_secret("MYSQL_HOST", secrets),
+        "PORT" : get_secret("MYSQL_PORT", secrets)
     }
 }
 

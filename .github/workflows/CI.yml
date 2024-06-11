@@ -1,0 +1,53 @@
+name: Almeang-i-CI
+
+on:
+   pull_request:
+    branches:
+      - 'main'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+   
+    - name: Check if secrets.json exists
+      run: |
+        if [ -f secrets.json ]; then
+          echo "secrets.json already exists. Skipping creation."
+        else
+          echo "secrets.json does not exist. Proceeding with JSON creation."
+        fi
+
+    - name: Create secrets.json
+      id: create-json
+      if: success() && !cancelled()
+      uses: jsdaniell/create-json@1.1.2
+      with:
+        name: "secrets.json"
+        json: ${{ secrets.SECRET_JSON }}
+        path: GHJM/secrets.json
+
+    - name: Set secrets.json path as output
+      if: steps.create-json.outputs.success == 'true'
+      run: echo "SECRETS_PATH=GHJM/secrets.json" >> $GITHUB_ENV
+        
+
+    # test 명령어로 모든 app test
+    - name: Run tests
+      env:
+         SECRETS_PATH: ${{ env.SECRETS_PATH }}
+      run: |
+        python manage.py test

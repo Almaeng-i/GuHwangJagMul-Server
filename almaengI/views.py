@@ -1,0 +1,39 @@
+from django.shortcuts import render
+from django.http import JsonResponse, HttpResponse, HttpRequest
+from django.views.decorators.http import require_http_methods
+from .models import Character
+from GHJM.json_response_setting import  JsonResponse
+import json
+
+# Create your views here.
+
+allowed_almaengi_type_list = ['고구마', '감자', '옥수수', '밤', '복숭아', '아보카도']
+
+def is_almaengi_type_valid(almaengi_type):
+   return almaengi_type in allowed_almaengi_type_list
+        
+
+@require_http_methods(["POST"])
+def save_almaengi(request):
+    user = request.user
+    almaengi_data = json.loads(request.body)
+    almaengi_type = almaengi_data.get('almaengi_type')
+    almaengi_name = almaengi_data.get('almaengi_name')
+    
+    if not is_almaengi_type_valid(almaengi_type):
+        return JsonResponse({'error': '잘못된 알맹이 타입입니다!'}) 
+    
+    character = Character(user=user, character_type=almaengi_type, name=almaengi_name)
+    character.save()
+    
+    return HttpResponse("Success!")
+
+
+@require_http_methods(["GET"])
+def response_almaengi_info(request):
+    user = request.user
+    characters = Character.objects.filter(user=user)
+    characters_list = list(characters.values('id', 'character_type', 'name', 'level'))
+    
+    return JsonResponse(characters_list, safe=False)
+    
