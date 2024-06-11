@@ -14,9 +14,13 @@ from django.core.exceptions import ImproperlyConfigured
 from pathlib import Path
 from datetime import timedelta      # JWT 사용됨
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent
+
+if os.getenv('CI'):
+    BASE_DIR = Path(__file__).resolve().parent.parent
+else:
+    BASE_DIR = Path(__file__).resolve().parent
+
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
@@ -116,6 +120,8 @@ DEFAULT_PROFILE_URL = get_secret('DEFAULT_PROFILE_URL', secrets)
 RECEIVE_IMG_ENDPOINT = get_secret('RECEIVE_IMG_ENDPOINT', secrets)
 BASE_S3_URL = get_secret('BASE_S3_URL', secrets)
 
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
 AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL = False     
