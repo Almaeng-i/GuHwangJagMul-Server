@@ -207,7 +207,7 @@ DATABASES = {
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',     # cache.set() 사용시 자동 저장시켜줌.
-        'LOCATION': 'redis://127.0.0.1:6379',
+        'LOCATION': get_secret("REDIS_LOCATION", secrets),
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         }
