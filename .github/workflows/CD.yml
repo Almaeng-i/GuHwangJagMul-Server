@@ -15,7 +15,6 @@ jobs:
         env:
           MYSQL_DATABASE: ${{ secrets.MYSQL_NAME }}
           MYSQL_USER: ${{ secrets.MYSQL_USER }}
-          MYSQL_PASSWORD: ${{ secrets.MYSQL_PW }}
           MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_PW }}
         options: >-
           --health-cmd "mysqladmin ping"
