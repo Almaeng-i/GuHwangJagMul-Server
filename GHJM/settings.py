@@ -13,6 +13,8 @@ import os, json
 from django.core.exceptions import ImproperlyConfigured
 from pathlib import Path
 from datetime import timedelta      # JWT 사용됨
+import pymysql  
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 
@@ -190,6 +192,9 @@ WSGI_APPLICATION = "GHJM.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+
+# 맥북 m칩에서 발생하는 문제 해결하기 위해 pymsql import
+pymysql.install_as_MySQLdb()
 
 DATABASES = {
     "default": {
