@@ -9,21 +9,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    services:
-      mysql:
-        image: mysql:latest
-        env:
-          MYSQL_DATABASE: ${{ secrets.MYSQL_NAME }}
-          MYSQL_USER: ${{ secrets.MYSQL_USER }}
-          MYSQL_PASSWORD: ${{ secrets.MYSQL_PW }}
-        options: >-
-          --health-cmd "mysqladmin ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 3
-        ports:
-          - 3306:3306
-
     env:
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
