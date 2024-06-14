@@ -1,4 +1,4 @@
-name: Almaeng-i-CD
+name: almaengi-cd
 
 on:
   push:
@@ -48,10 +48,10 @@ jobs:
         uses: cloudtype-github-actions/deploy@v1
         with:
           token: ${{ secrets.CLOUDTYPE_TOKEN }}
-          project: almaeng-i
+          project: ${{ secrets.CLOUDTYPE_PROJECT_NAME }}
           stage: main
           yaml: >
-            name: almaeng-i
+            name: ${{ secrets.CLOUDTYPE_PROJECT_NAME }}
             app: python@3.x
             options:
               ports: 8000
