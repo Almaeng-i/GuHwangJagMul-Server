@@ -52,7 +52,7 @@ jobs:
           stage: main
           yaml: >
             name: ${{ secrets.CLOUDTYPE_PROJECT_NAME }}
-            app: python@3.x
+            app: python@3.9
             options:
               ports: 8000
               env:
