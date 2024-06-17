@@ -48,10 +48,10 @@ jobs:
         uses: cloudtype-github-actions/deploy@v1
         with:
           token: ${{ secrets.CLOUDTYPE_TOKEN }}
-          project: ${{ secrets.CLOUDTYPE_PROJECT_NAME }}
+          project: test-abc
           stage: main
           yaml: >
-            name: ${{ secrets.CLOUDTYPE_PROJECT_NAME }}
+            name: test-abc
             app: python@3.9
             options:
               ports: 8000
