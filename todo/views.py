@@ -8,8 +8,6 @@ from django.utils import timezone
 import json
 
 # Create your views here.
-
-
 @require_http_methods(['POST'])
 def create_todo(request):
     user = request.user
@@ -132,10 +130,3 @@ def get_my_todo_list(request):
     
     # safe False로 지정하여 딕셔너리 값도 반환할 수 있도록 설정.
     return JsonResponse(todos_data, safe=False)
-   
-
-    
-    
-    
-    
-    
