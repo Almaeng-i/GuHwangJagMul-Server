@@ -86,6 +86,7 @@ INSTALLED_APPS = [
     "almaengI",
     "userprofile",
     'thirdparty',
+    'todo',
     
     # DRF 
     'rest_framework',
