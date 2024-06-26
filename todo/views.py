@@ -5,13 +5,17 @@ from django.core.exceptions import ValidationError
 from django.views.decorators.http import require_http_methods
 from todo.models import Todo
 from django.utils import timezone
+from todo.utils import parse_json_body
 import json
 
 # Create your views here.
 @require_http_methods(['POST'])
 def create_todo(request):
     user = request.user
-    todo_data = json.loads(request.body)
+    todo_data, error_response = parse_json_body(request)
+
+    if error_response:
+        return error_response
     
     title = todo_data.get('title')
     
@@ -27,18 +31,22 @@ def create_todo(request):
 
 @require_http_methods(['PUT'])
 def update_todo(request):
-    todo_data = json.loads(request.body)
+    todo_data, error_response = parse_json_body(request)
+
+    if error_response:
+        return error_response
+   
     id = todo_data.get('id')
     title = todo_data.get('title')
     
     if not id or not title:
-        return JsonResponse({'error': '해당 user에 대한 todo가 존재하지 않습니다.'}, status=400)
+        return JsonResponse({'error': 'id와 todo는 필수 입력 값 입니다.'}, status=400)
 
     try:
         # 해당 id와 user에 맞는 Todo 선택
         todo = Todo.objects.get(id=id)
     except Todo.DoesNotExist:
-        return JsonResponse({'error': 'todo를 조회할 수 없습니다.'})
+        return JsonResponse({'error': 'todo를 조회할 수 없습니다.'}, status=404)
 
     todo.title = title
     
@@ -52,15 +60,15 @@ def update_todo(request):
 
 @require_http_methods(['PATCH'])
 def is_success(request):    
-    try:
-        todo_data = json.loads(request.body)
-    except json.JSONDecodeError:
-        return JsonResponse({'error': '유효하지 않은 JSON 값 입니다.'}, status=400)
+    todo_data, error_response = parse_json_body(request)
+
+    if error_response:
+        return error_response
     
     id = todo_data.get('id')
     
     if id is None:
-        return JsonResponse({'error': 'id는 필수 입력값 입니다.'}, status=400)
+        return JsonResponse({'error': 'id는 필수 입력 값 입니다.'}, status=400)
     
     try:
         todo = Todo.objects.get(id=id)
@@ -79,15 +87,15 @@ def is_success(request):
 
 @require_http_methods(['DELETE'])
 def delete_todo(request):
-    try:
-        todo_data = json.loads(request.body)
-    except json.JSONDecodeError:
-        return JsonResponse({'error': '유효하지 않은 JSON 값 입니다.'}, status=400)
+    todo_data, error_response = parse_json_body(request)
+
+    if error_response:
+        return error_response
     
     id = todo_data.get('id')
     
     if not id:
-        return JsonResponse({'error': 'id는 필수 입력값 입니다.'}, status=400)
+        return JsonResponse({'error': 'id는 필수 입력 값 입니다.'}, status=400)
     
     try:
         todo = Todo.objects.get(id=id)
@@ -101,17 +109,17 @@ def delete_todo(request):
 
 @require_http_methods(['GET'])
 def get_my_todo_list(request):
-    try:
-        todo_data = json.loads(request.body)
-    except json.JSONDecodeError:
-        return JsonResponse({'error': '유효하지 않은 JSON 값 입니다.'}, status=400)
+    todo_data, error_response = parse_json_body(request)
+
+    if error_response:
+        return error_response
     
     year = todo_data.get('year')
     month = todo_data.get('month')
     day = todo_data.get('day')
     
     if not year or not month or not day:
-        return JsonResponse({'error': '년, 월, 일 은 필수 입력값 입니다.'}, status=400)
+        return JsonResponse({'error': '년, 월, 일 은 필수 입력 값 입니다.'}, status=400)
     
     
     todo_list = Todo.objects.filter(
@@ -128,5 +136,5 @@ def get_my_todo_list(request):
         'created_at': todo.created_at.strftime("%Y-%m-%d %H:%M:%S")
     } for todo in todo_list]
     
-    # safe False로 지정하여 딕셔너리 값도 반환할 수 있도록 설정.
+    # safe False로 지정하여 리스트 값도 반환할 수 있도록 설정.
     return JsonResponse(todos_data, safe=False)
