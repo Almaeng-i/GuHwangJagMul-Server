@@ -4,6 +4,6 @@ from almaengI import views
 
 
 urlpatterns = [
-    path('save/', views.save_almaengi),
+    path('', views.save_almaengi),
     path('mycollection/', views.response_almaengi_info)
 ]
