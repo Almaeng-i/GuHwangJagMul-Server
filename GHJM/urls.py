@@ -23,6 +23,7 @@ urlpatterns = [
     path('almaengi/', include('almaengI.urls')),
     path('userprofile/', include('userprofile.urls')),
     path('s3-bucket/', include('thirdparty.urls')),
-    path('todo/', include('todo.urls'))
+    path('todo/', include('todo.urls')),
+    path('bucket-list/', include('bucket_list.urls')),
 ]
 
