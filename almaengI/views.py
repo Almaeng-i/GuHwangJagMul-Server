@@ -21,7 +21,7 @@ def save_almaengi(request):
     almaengi_name = almaengi_data.get('almaengi_name')
     
     if not is_almaengi_type_valid(almaengi_type):
-        return JsonResponse({'error': '잘못된 알맹이 타입입니다!'}) 
+        return JsonResponse({'error': '잘못된 알맹이 타입입니다!'}, status=400) 
     
     character = Character(user=user, character_type=almaengi_type, name=almaengi_name)
     character.save()
@@ -32,8 +32,19 @@ def save_almaengi(request):
 @require_http_methods(["GET"])
 def response_almaengi_info(request):
     user = request.user
-    characters = Character.objects.filter(user=user)
-    characters_list = list(characters.values('id', 'character_type', 'name', 'level'))
     
-    return JsonResponse(characters_list, safe=False)
+    try:
+        characters = Character.objects.filter(user=user)
+        if not characters.exists():
+            return JsonResponse({'error': '알맹이가 존재하지 않습니다.'}, status=404)
+        
+        characters_list = list(characters.values('id', 'character_type', 'name', 'level'))
+    
+        return JsonResponse(characters_list, safe=False)
+    
+    except Character.DoesNotExist:
+            return JsonResponse({'error': '알맹이를 조회할 수 없습니다.'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+    
     
