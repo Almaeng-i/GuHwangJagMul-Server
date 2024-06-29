@@ -87,6 +87,7 @@ INSTALLED_APPS = [
     "userprofile",
     'thirdparty',
     'todo',
+    'bucket_list',
     
     # DRF 
     'rest_framework',
