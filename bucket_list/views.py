@@ -128,10 +128,6 @@ def get_my_bucket_list(request):
     except ValueError:
         return JsonResponse({'error': '년도 타입은 정수형만 입력가능합니다.'}, status=400)
     
-    except ValidationError as e:
-        return JsonResponse({'error': e.message_dict}, status=400)    
-    
-    
     bucket_list = BucketList.objects.filter(
         created_at__year=year
     )
