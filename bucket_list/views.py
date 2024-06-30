@@ -8,8 +8,6 @@ from GHJM.utils import parse_json_body
 import json
 
 
-
-# Create your views here.
 @require_http_methods(['POST'])
 def create_bucket_list(request):
     user = request.user
@@ -92,6 +90,7 @@ def is_success(request):
     except ValidationError as e:
         return JsonResponse({'error': e.message_dict}, status=400)
     
+    
 @require_http_methods(['DELETE'])
 def delete_bucket_list(request):
     bucket_list_data, error_response = parse_json_body(request)
@@ -112,6 +111,7 @@ def delete_bucket_list(request):
     bucket_list.delete()
     
     return JsonResponse({'success': 'bucket list가 정상적으로 삭제되었습니다.'})
+
 
 @require_http_methods(['GET'])
 def get_my_bucket_list(request):
@@ -144,5 +144,3 @@ def get_my_bucket_list(request):
     } for each_bucket_list in bucket_list]
     
     return JsonResponse(bucket_lists_data, safe=False)
-    
-    

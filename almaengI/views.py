@@ -42,8 +42,6 @@ def response_almaengi_info(request):
     
         return JsonResponse(characters_list, safe=False)
     
-    except Character.DoesNotExist:
-            return JsonResponse({'error': '알맹이를 조회할 수 없습니다.'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
     

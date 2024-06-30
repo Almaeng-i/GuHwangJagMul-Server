@@ -12,5 +12,5 @@ class BucketList(models.Model):
     created_at = models.DateTimeField(auto_now=True)
     
     def clean(self):
-        if self.title is None or self.title.strip() == "":
+        if not self.title or not self.title.strip():
             raise ValidationError('bucket list를 비워두거나 공백만 포함할 수 없습니다.')
