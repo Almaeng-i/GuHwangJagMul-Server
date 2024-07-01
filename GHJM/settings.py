@@ -88,6 +88,7 @@ INSTALLED_APPS = [
     'thirdparty',
     'todo',
     'bucket_list',
+    'monthly_goal',
     
     # DRF 
     'rest_framework',
