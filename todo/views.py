@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.views.decorators.http import require_http_methods
 from todo.models import Todo
 from django.utils import timezone
-from todo.utils import parse_json_body
+from GHJM.utils import parse_json_body
 import json
 
 # Create your views here.
@@ -46,7 +46,7 @@ def update_todo(request):
         # 해당 id와 user에 맞는 Todo 선택
         todo = Todo.objects.get(id=id)
     except Todo.DoesNotExist:
-        return JsonResponse({'error': 'todo를 조회할 수 없습니다.'}, status=404)
+        return JsonResponse({'error': '해당 id에 대한 todo를 조회할 수 없습니다. id값이 올바른지 확인해 주세요.'}, status=404)
 
     todo.title = title
     
@@ -73,7 +73,7 @@ def is_success(request):
     try:
         todo = Todo.objects.get(id=id)
     except Todo.DoesNotExist:
-        return JsonResponse({'error': 'todo가 존재하지 않습니다.'}, status=404)
+        return JsonResponse({'error': '해당 id에 대한 todo가 존재하지 않습니다. id값이 올바른지 확인해 주세요'}, status=404)
     
     todo.is_succeed = not todo.is_succeed
     
@@ -100,7 +100,7 @@ def delete_todo(request):
     try:
         todo = Todo.objects.get(id=id)
     except Todo.DoesNotExist:
-        return JsonResponse({'error': 'todo가 존재하지 않습니다.'}, status=404)
+        return JsonResponse({'error': '해당 id에 대한 todo가 존재하지 않습니다.'}, status=404)
     
     todo.delete()
     
