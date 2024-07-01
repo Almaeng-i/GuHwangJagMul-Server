@@ -25,5 +25,6 @@ urlpatterns = [
     path('s3-bucket/', include('thirdparty.urls')),
     path('todo/', include('todo.urls')),
     path('bucket-list/', include('bucket_list.urls')),
+    path('monthly-goal/', include('monthly_goal.urls')),
 ]
 
