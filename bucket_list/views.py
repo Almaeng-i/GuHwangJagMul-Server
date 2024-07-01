@@ -50,8 +50,6 @@ def update_bucket_list(request):
     except BucketList.DoesNotExist:
         return JsonResponse({'error': '해당 id에 대한 bucket list 값이 존재하지 않습니다. id값이 올바른지 확인해 주세요'}, status=404)
     
-    
-    # db에 수정된 title, content 값 지정. -> 저장은 .save() 함수를 통해 변경사항 저장.
     bucket_list.title = title
     bucket_list.content = content
     
