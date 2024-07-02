@@ -64,6 +64,3 @@ class AccessTokenMiddleware:
             if each_path in path:
                 return True
         return False
-        
-    
-

@@ -140,7 +140,3 @@ def delete_user(request):
     user.delete()
     
     return JsonResponse({'Success': '회원탈퇴가 완료되었습니다.'})
-    
-    
-        
-        
