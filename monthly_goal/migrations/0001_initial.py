@@ -14,21 +14,17 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="BucketList",
+            name="MonthList",
             fields=[
-                (
-                    "id",
-                    models.AutoField(primary_key=True, serialize=False, unique=True),
-                ),
+                ("id", models.AutoField(primary_key=True, serialize=False)),
                 ("title", models.CharField(max_length=200)),
-                ("content", models.TextField(max_length=300, null=True)),
                 ("is_succeed", models.BooleanField(default=False)),
                 ("created_at", models.DateTimeField(auto_now=True)),
                 (
                     "user",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        related_name="bucket_list",
+                        related_name="month",
                         to=settings.AUTH_USER_MODEL,
                     ),
                 ),

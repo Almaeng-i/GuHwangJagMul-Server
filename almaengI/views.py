@@ -17,8 +17,8 @@ def is_almaengi_type_valid(almaengi_type):
 def save_almaengi(request):
     user = request.user
     almaengi_data = json.loads(request.body)
-    almaengi_type = almaengi_data.get('almaengi_type')
-    almaengi_name = almaengi_data.get('almaengi_name')
+    almaengi_type = almaengi_data.get('character_type')
+    almaengi_name = almaengi_data.get('name')
     
     if not is_almaengi_type_valid(almaengi_type):
         return JsonResponse({'error': '잘못된 알맹이 타입입니다!'}, status=400) 
