@@ -132,3 +132,11 @@ def logout(request):
     cache.delete(user_id)
     
     return JsonResponse({'message': '로그아웃 되었습니다.'}, status=204)
+
+
+@require_http_methods(['DELETE'])
+def delete_user(request):
+    user = request.user
+    user.delete()
+    
+    return JsonResponse({'Success': '회원탈퇴가 완료되었습니다.'})

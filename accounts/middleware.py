@@ -37,7 +37,10 @@ class AccessTokenMiddleware:
             id = payload.get('user_id')
 
             # 추출된 사용자 식별 정보를 사용하여 사용자를 가져옴.
-            user = CustomUser.objects.get(id=id)
+            try:
+                user = CustomUser.objects.get(id=id)
+            except CustomUser.DoesNotExist:
+                return JsonResponse({'error': '해당 id에 대한 user 객체가 존재하지 않습니다.'}, status=404)
             
             # 인증이 성공하면 요청에 사용자를 할당.
             request.user = user
@@ -61,6 +64,3 @@ class AccessTokenMiddleware:
             if each_path in path:
                 return True
         return False
-        
-    
-

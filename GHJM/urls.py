@@ -27,4 +27,3 @@ urlpatterns = [
     path('bucket-list/', include('bucket_list.urls')),
     path('monthly-goal/', include('monthly_goal.urls')),
 ]
-
