@@ -26,7 +26,6 @@ def create_bucket_list(request):
         bucket_list.full_clean()
         bucket_list.save()
         return HttpResponse('Success!')
-    
     except ValidationError as e:
             return HttpResponse(f'error: {e.message_dict}', status=400)
        
@@ -57,7 +56,6 @@ def update_bucket_list(request):
         bucket_list.full_clean()
         bucket_list.save()
         return JsonResponse({'Success': 'Bucket List 수정을 완료하였습니다.'})
-    
     except ValidationError as e:
             return JsonResponse({'error': e.message_dict}, status=400)
     
@@ -122,7 +120,6 @@ def get_my_bucket_list(request):
     
     try:
         year = int(year)
-        
     except ValueError:
         return JsonResponse({'error': '년도 타입은 정수형만 입력가능합니다.'}, status=400)
     
