@@ -59,7 +59,7 @@ class AccessTokenMiddleware:
     
     # 미들웨어를 제외할 경로 탐색 -> Oauth, admin, refresh page
     def check_path_to_exclude_middleware(self, path):
-        except_path = ['kakao', 'refresh', 'admin', 'logout']
+        except_path = ['kakao', 'reissue-token', 'admin', 'logout']
         for each_path in except_path:
             if each_path in path:
                 return True
