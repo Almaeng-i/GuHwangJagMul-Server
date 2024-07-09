@@ -85,15 +85,15 @@ def reissue_token(request):
     
     try:
         user_id = decode_token(refresh_token).get('user_id')
-    
+        
     except DecodeError:
-        return JsonResponse({'error': '옳바르지 않은 토큰 형식입니다.'}, status=401)
+        return JsonResponse({'error': '옳바르지 않은 리프레시 토큰 형식입니다.'}, status=401)
     
     except ExpiredSignatureError:
-        return JsonResponse({'error': '토큰이 만료되었습니다.'}, status=401)
+        return JsonResponse({'error': '리프레시 토큰이 만료되었습니다.'}, status=401)
     
     except InvalidTokenError:
-        return JsonResponse({'error': '유효하지 않은 토큰 입니다.'}, status=401)
+        return JsonResponse({'error': '유효하지 않은 리프레시 토큰 입니다.'}, status=401)
     
     # user_id에 해당하는 토큰을 가지고옴.
     saved_refresh_token = cache.get(user_id)
@@ -114,7 +114,7 @@ def reissue_token(request):
 @require_http_methods(['DELETE'])
 # user가 로그아웃 버튼을 직접 클릭 했을 경우    
 def logout(request):
-    refresh_token = request.headers.get(REFRESH_TOKEN)
+    refresh_token = request.headers.get('REFRESH-TOKEN')
      
     try:
         user_id = decode_token(refresh_token).get('user_id')
