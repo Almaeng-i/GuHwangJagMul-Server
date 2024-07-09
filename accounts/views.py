@@ -100,11 +100,12 @@ def reissue_token(request):
     
     if saved_refresh_token != None:
         access_token = generate_access_token(user_id)
-        
+        refresh_token = generate_refresh_token(user_id)
         access_expire_time_format = get_token_exp_in_str_format(access_token)
         
         response_data = {
             'access_token': access_token,
+            'refresh_token': refresh_token,
             'access_expire_time': access_expire_time_format
         }
 
