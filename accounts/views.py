@@ -12,7 +12,7 @@ from GHJM.json_response_setting import JsonResponse
 from django.views.decorators.http import require_http_methods
 import requests
 
-REFRESH_TOKEN = 'refresh-token'
+REFRESH_TOKEN = 'refreshtoken'
 
 # Create your views here.
 def kakao_login(request):
@@ -115,7 +115,7 @@ def reissue_token(request):
 @require_http_methods(['DELETE'])
 # user가 로그아웃 버튼을 직접 클릭 했을 경우    
 def logout(request):
-    refresh_token = request.headers.get('REFRESH-TOKEN')
+    refresh_token = request.headers.get(REFRESH_TOKEN)
      
     try:
         user_id = decode_token(refresh_token).get('user_id')
