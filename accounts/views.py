@@ -16,31 +16,7 @@ REFRESH_TOKEN = 'refreshtoken'
 
 # Create your views here.
 def kakao_login(request):
-    rest_api_key = getattr(settings, 'KAKAO_REST_API_KEY')
-    redirect_uri = getattr(settings, 'KAKAO_CALLBACK_URI')
-    authorize_url = f"https://kauth.kakao.com/oauth/authorize?client_id={rest_api_key}&redirect_uri={redirect_uri}&response_type=code&scope=account_email"
-    return JsonResponse({"authorize_url": authorize_url}) 
-
-
-def kakao_callback(request):
-    rest_api_key = getattr(settings, 'KAKAO_REST_API_KEY')
-    redirect_uri = getattr(settings, 'KAKAO_CALLBACK_URI')
-    
-    code = request.GET.get("code")
-    
-    if code is None:
-        return JsonResponse({'error': 'code 값이 존재하지 않습니다.'}, status=400)
-    
-        # Access Token Request
-    token_url = f"https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id={rest_api_key}&redirect_uri={redirect_uri}&code={code}"
-    
-    token_response = requests.post(token_url)
-    token_data = token_response.json()
-    
-    if 'error' in token_data:
-        return JsonResponse({'error': token_data['error']}, status=400)
-    
-    access_token = token_data.get("access_token")
+    access_token = request.headers.get("accesstoken")
 
     # Email Request
     profile_url = "https://kapi.kakao.com/v2/user/me"
