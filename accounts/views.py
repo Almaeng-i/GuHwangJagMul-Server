@@ -16,67 +16,48 @@ REFRESH_TOKEN = 'refreshtoken'
 
 # Create your views here.
 def kakao_login(request):
-    rest_api_key = getattr(settings, 'KAKAO_REST_API_KEY')
-    redirect_uri = getattr(settings, 'KAKAO_CALLBACK_URI')
-    authorize_url = f"https://kauth.kakao.com/oauth/authorize?client_id={rest_api_key}&redirect_uri={redirect_uri}&response_type=code&scope=account_email"
-    return redirect(authorize_url) 
+    access_token = request.headers.get("accesstoken")
 
+    # Email Request
+    profile_url = "https://kapi.kakao.com/v2/user/me"
+    headers = {'Authorization' : f'Bearer {access_token}'}
+    profile_response = requests.get(profile_url, headers=headers)
+    profile_data = profile_response.json()
+    
+    email = profile_data.get('kakao_account', {}).get('email')
+    nickname = profile_data.get('properties', {}).get('nickname')
+    
+    try:
+        user = CustomUser.objects.get(email=email)
+        user.is_social_user = True      
+        user.social_provider = "Kakao"
+        user.social_uid = profile_data.get('id')
+        user.nickname = nickname
+        user.save()
+        
+    except ObjectDoesNotExist:
+        user = CustomUser.objects.create(email=email, is_social_user=True, social_provider="Kakao", social_uid=profile_data.get('id'))
+    
+    # user_id 값을 통해 access & refresh token 발급    
+    user_id = user.id
+    
+    # access & refresh token 발급 후 redis에 expire date 저장 
+    access_token = generate_access_token(user_id)
+    refresh_token = generate_refresh_token(user_id)
+    access_expire_time_format = get_token_exp_in_str_format(access_token)
+    refresh_expire_time_format = get_token_exp_in_str_format(refresh_token)
+    save_refresh_token(user_id, refresh_token)
+    
+    response_data = {
+        'access_token': access_token,
+        'refresh_token': refresh_token,
+        'access_expire_time': access_expire_time_format,
+        'refresh_expire_time' : refresh_expire_time_format
+    }
+    return JsonResponse(response_data)
 
-class KakaoCallbackView(View):
-    def get(self, request):
-        rest_api_key = getattr(settings, 'KAKAO_REST_API_KEY')
-        redirect_uri = getattr(settings, 'KAKAO_CALLBACK_URI')
-        code = request.GET.get("code")
         
-         # Access Token Request
-        token_url = f"https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id={rest_api_key}&redirect_uri={redirect_uri}&code={code}"
         
-        token_response = requests.post(token_url)
-        token_data = token_response.json()
-        
-        if 'error' in token_data:
-            return JsonResponse({'error': token_data['error']}, status=400)
-        
-        access_token = token_data.get("access_token")
-
-        # Email Request
-        profile_url = "https://kapi.kakao.com/v2/user/me"
-        headers = {'Authorization' : f'Bearer {access_token}'}
-        profile_response = requests.get(profile_url, headers=headers)
-        profile_data = profile_response.json()
-        
-        email = profile_data.get('kakao_account', {}).get('email')
-        nickname = profile_data.get('properties', {}).get('nickname')
-        
-        try:
-            user = CustomUser.objects.get(email=email)
-            user.is_social_user = True      
-            user.social_provider = "Kakao"
-            user.social_uid = profile_data.get('id')
-            user.nickname = nickname
-            user.save()
-            
-            
-        except ObjectDoesNotExist:
-            user = CustomUser.objects.create(email=email, is_social_user=True, social_provider="Kakao", social_uid=profile_data.get('id'))
-        
-        # user_id 값을 통해 access & refresh token 발급    
-        user_id = user.id
-        
-        # access & refresh token 발급 후 redis에 expire date 저장 
-        access_token = generate_access_token(user_id)
-        refresh_token = generate_refresh_token(user_id)
-        access_expire_time_format = get_token_exp_in_str_format(access_token)
-        refresh_expire_time_format = get_token_exp_in_str_format(refresh_token)
-        save_refresh_token(user_id, refresh_token)
-        
-        response_data = {
-            'access_token': access_token,
-            'refresh_token': refresh_token,
-            'access_expire_time': access_expire_time_format,
-            'refresh_expire_time' : refresh_expire_time_format
-        }
-        return JsonResponse(response_data)
 
     
 require_http_methods(['POST'])
