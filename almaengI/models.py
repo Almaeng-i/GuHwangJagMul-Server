@@ -8,6 +8,7 @@ class Character(models.Model):
     character_type = models.CharField(max_length=20)
     name = models.CharField(max_length=20)
     level = models.PositiveBigIntegerField(default=1)
+    exp = models.PositiveBigIntegerField(default=0)
     
     def __str__(self):
         return self.id
