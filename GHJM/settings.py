@@ -110,6 +110,9 @@ INSTALLED_APPS = [
     
     # AWS 
     'storages',
+    
+    # django scheduler
+    'django_apscheduler',
 ]
 
 # AWS Setting
