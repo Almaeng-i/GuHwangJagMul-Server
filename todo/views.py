@@ -1,12 +1,16 @@
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse, HttpRequest
+from accounts.models import CustomUser
 from GHJM.json_response_setting import  JsonResponse
 from django.core.exceptions import ValidationError
 from django.views.decorators.http import require_http_methods
 from todo.models import Todo
+from almaengI.models import Character
 from django.utils import timezone
 from GHJM.utils import parse_json_body
+from apscheduler.schedulers.background import BackgroundScheduler
 import json
+
 
 # Create your views here.
 @require_http_methods(['POST'])
@@ -138,3 +142,58 @@ def get_my_todo_list(request):
     
     # safe False로 지정하여 리스트 값도 반환할 수 있도록 설정.
     return JsonResponse(todos_data, safe=False)
+
+def update_character_exp(user, grant_exp):
+    max_exp = 200
+    characters = Character.objects.filter(user=user).exclude(exp=max_exp)
+    
+    for character in characters:
+        character.exp += grant_exp
+        character_exp = character.exp
+        
+        if character_exp <= 20:
+            character.level = 1
+        elif character_exp > 20 and character_exp <= 50:
+            character.level = 2
+        elif character_exp > 50 and character_exp <= 100:
+            character.level = 3
+        elif character_exp > 100 and character_exp <= max_exp:
+            character.level = 4            
+        
+        character.save()
+
+
+# 특정 사용자에 대해 지정된 날짜의 모든 Todo 항목의 is_succeed 값을 리스트 형태로 가져옴
+def get_todo_success_list(user, year, month, day):
+    success_list = list(Todo.objects.filter(
+        user=user,
+        created_at__year=year,
+        created_at__month=month,
+        created_at__day=day
+    ).values_list('is_succeed', flat=True))
+    return success_list
+
+
+def todo_exp(user, year, month, day):
+    # 특정 사용자의 지정된 날짜의 성공한 Todo 항목 개수를 세어 경험치를 업데이트.
+    success_list = get_todo_success_list(user, year, month, day)
+    grant_exp = sum(success_list)
+    update_character_exp(user, grant_exp)   
+    
+    
+def monthly_todo_exp(user, year, month):
+    success_list = get_todo_success_list(user, year, month)
+    success_cnt = sum(success_list)
+    grant_exp = success_cnt * 5
+    update_character_exp(user, grant_exp)   
+
+
+def scheduled_job():
+    users = CustomUser.objects.all()
+    today = timezone.now().date()
+    for user in users:
+        todo_exp(user, today.year, today.month, today.day)
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(scheduled_job, 'cron', hour=0, minute=0)  # 5초마다 실행되도록 설정
+scheduler.start()
