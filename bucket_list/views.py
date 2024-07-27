@@ -2,9 +2,13 @@ from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse, HttpRequest
 from django.views.decorators.http import require_http_methods
 from .models import BucketList
+from userprofile.models import UserProfile
+from accounts.models import CustomUser
 from GHJM.json_response_setting import JsonResponse
 from django.core.exceptions import ValidationError
 from GHJM.utils import parse_json_body
+from apscheduler.schedulers.background import BackgroundScheduler
+from django.utils import timezone
 import json
 
 
@@ -135,3 +139,38 @@ def get_my_bucket_list(request):
     } for each_bucket_list in bucket_list]
     
     return JsonResponse(bucket_lists_data, safe=False)
+
+
+def update_shop_point(user, grant_point):
+    user = UserProfile.objects.get(user=user)
+    user.cash += grant_point
+    
+    user.save()  
+
+
+def get_success_bucketlist(user, year):
+    success_list = list(BucketList.objects.filter(
+        user=user,
+        create_at__year=year,    
+    ).values_list('is_success', flat=True))
+    
+    return success_list
+
+
+def get_point(user, year):
+    success_list = get_success_bucketlist(user, year)
+    count_success_list = sum(success_list)
+    grant_point = count_success_list * 10
+    update_shop_point(user, grant_point)      
+
+        
+def scheduled_job():
+    users = CustomUser.objects.all()
+    today = timezone.now().date()
+    for user in users:
+        get_point(user, today.year)
+        
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(scheduled_job, 'cron', hour=0, minute=0)  # 매일밤 자정에 실행되도록 설정
+scheduler.start()
