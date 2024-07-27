@@ -11,6 +11,7 @@ class UserProfile(models.Model):
     nickname = models.CharField(max_length=10)
     profile_picture_url = models.URLField(max_length=200, blank=True)
     user_introduction = models.CharField(max_length=50, null=True)
+    cash = models.BigIntegerField(default=0)
     
     def clean(self):
         if not self.nickname or not self.nickname.strip():
