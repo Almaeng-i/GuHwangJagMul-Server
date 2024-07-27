@@ -195,6 +195,7 @@ def scheduled_job():
     today = timezone.now().date()
     for user in users:
         todo_exp(user, today.year, today.month, today.day)
+        monthly_todo_exp(user, today.year, today.month)
 
 scheduler = BackgroundScheduler()
 scheduler.add_job(scheduled_job, 'cron', hour=0, minute=0)  # 매일밤 자정에 실행되도록 설정
