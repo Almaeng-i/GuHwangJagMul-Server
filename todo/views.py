@@ -158,7 +158,9 @@ def update_character_exp(user, grant_exp):
         elif character_exp > 50 and character_exp <= 100:
             character.level = 3
         elif character_exp > 100 and character_exp <= max_exp:
-            character.level = 4            
+            character.level = 4      
+        elif character_exp > max_exp:
+            character_exp = max_exp      
         
         character.save()
 
@@ -184,8 +186,8 @@ def todo_exp(user, year, month, day):
 def monthly_todo_exp(user, year, month):
     success_list = get_todo_success_list(user, year, month)
     success_cnt = sum(success_list)
-    grant_exp = success_cnt * 5
-    update_character_exp(user, grant_exp)   
+    grant_exp = success_cnt * 5     # 한달 목표 달성했을 경우 5% 성장 포인트 부여.
+    update_character_exp(user, grant_exp)  
 
 
 def scheduled_job():
@@ -195,5 +197,5 @@ def scheduled_job():
         todo_exp(user, today.year, today.month, today.day)
 
 scheduler = BackgroundScheduler()
-scheduler.add_job(scheduled_job, 'cron', hour=0, minute=0)  # 5초마다 실행되도록 설정
+scheduler.add_job(scheduled_job, 'cron', hour=0, minute=0)  # 매일밤 자정에 실행되도록 설정
 scheduler.start()
