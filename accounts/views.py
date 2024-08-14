@@ -10,13 +10,14 @@ from jwt import DecodeError, ExpiredSignatureError, InvalidTokenError
 from .jwt import generate_access_token, generate_refresh_token, decode_token, get_token_exp,save_refresh_token, get_token_exp_in_str_format
 from GHJM.json_response_setting import JsonResponse
 from django.views.decorators.http import require_http_methods
-import requests
+import requests, json
 
 REFRESH_TOKEN = 'refreshtoken'
 
 # Create your views here.
 def kakao_login(request):
     access_token = request.headers.get("accesstoken")
+    device_token = request.headers.get('devicetoken')
 
     # Email Request
     profile_url = "https://kapi.kakao.com/v2/user/me"
@@ -33,9 +34,16 @@ def kakao_login(request):
         user.social_provider = "Kakao"
         user.social_uid = profile_data.get('id')
         user.nickname = nickname
+        user.device_token = device_token
         user.save()
+        
     except ObjectDoesNotExist:
-        user = CustomUser.objects.create(email=email, is_social_user=True, social_provider="Kakao", social_uid=profile_data.get('id'))
+        user = CustomUser.objects.create(
+            email=email, 
+            is_social_user=True, 
+            social_provider="Kakao",
+            social_uid=profile_data.get('id'),
+            device_token=device_token)
     
     # user_id 값을 통해 access & refresh token 발급    
     user_id = user.id
@@ -43,8 +51,16 @@ def kakao_login(request):
     # access & refresh token 발급 후 redis에 expire date 저장 
     access_token = generate_access_token(user_id)
     refresh_token = generate_refresh_token(user_id)
+    
+    # bytes 타입을 str 타입으로 변환 -> json serializable 문제 해결하기 위함.
+    if isinstance(access_token, bytes):
+        access_token = access_token.decode('utf-8')
+    if isinstance(refresh_token, bytes):
+        refresh_token = refresh_token.decode('utf-8')
+    
     access_expire_time_format = get_token_exp_in_str_format(access_token)
     refresh_expire_time_format = get_token_exp_in_str_format(refresh_token)
+    
     save_refresh_token(user_id, refresh_token)
     
     response_data = {
@@ -53,6 +69,7 @@ def kakao_login(request):
         'access_expire_time': access_expire_time_format,
         'refresh_expire_time' : refresh_expire_time_format
     }
+    
     return JsonResponse(response_data)
 
     
@@ -118,3 +135,25 @@ def delete_user(request):
     user.delete()
     
     return JsonResponse({'Success': '회원탈퇴가 완료되었습니다.'})
+
+
+# device token이 변경될 경우 다시 저장하기 위함.
+@require_http_methods(['POST'])
+def save_device_token(request):
+    try:
+        data = json.loads(request.body)
+        device_token = data.get('devicetoken')
+        user_id = data.get('userid')
+        
+        if device_token and user_id:
+            user = CustomUser.objects.get(id=user_id)
+            user.device_token = device_token
+            user.save()
+            return JsonResponse({'success': '디바이스 토큰을 저장하였습니다.'})
+        else:
+            return JsonResponse({'error': '디바이스 토큰 또는 사용자 ID가 없습니다.'}, status=400)
+        
+    except CustomUser.DoesNotExist:
+        return JsonResponse({'error': '해당 유저가 존재하지 않습니다.'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
