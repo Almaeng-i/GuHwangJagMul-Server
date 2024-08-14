@@ -285,4 +285,7 @@ pip-selfcheck.json
 # secret_key
 secrets.json
 
+# certificate 
+certificate/
+
 # End of https://www.toptal.com/developers/gitignore/api/python,django
