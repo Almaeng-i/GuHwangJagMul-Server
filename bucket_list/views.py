@@ -79,7 +79,7 @@ def is_success(request):
     try:
         bucket_list = BucketList.objects.get(id=id)
     except BucketList.DoesNotExist:
-        return JsonResponse({'error': '해당 id에 대한 bucekt list가 존재하지 않습니다. id값이 올바른지 확인해 주세요'}, status=404)
+        return JsonResponse({'error': '해당 id에 대한 bucket list가 존재하지 않습니다. id값이 올바른지 확인해 주세요'}, status=404)
         
     bucket_list.is_succeed = not bucket_list.is_succeed
     
