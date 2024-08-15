@@ -52,12 +52,6 @@ def kakao_login(request):
     access_token = generate_access_token(user_id)
     refresh_token = generate_refresh_token(user_id)
     
-    # bytes 타입을 str 타입으로 변환 -> json serializable 문제 해결하기 위함.
-    if isinstance(access_token, bytes):
-        access_token = access_token.decode('utf-8')
-    if isinstance(refresh_token, bytes):
-        refresh_token = refresh_token.decode('utf-8')
-    
     access_expire_time_format = get_token_exp_in_str_format(access_token)
     refresh_expire_time_format = get_token_exp_in_str_format(refresh_token)
     
