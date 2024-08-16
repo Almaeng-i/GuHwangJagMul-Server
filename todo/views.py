@@ -166,8 +166,11 @@ def update_character_exp(user, grant_exp):
         
         if before_exp != character_exp:
             message = f'내 알맹이가 {character.level} 레벨에 도달했습니다!'
-            send_push_notification(user, message)
-        
+            try:
+                send_push_notification(user, message)
+            except AttributeError:
+                return JsonResponse({'error': '유효하지 않은 사용자입니다.'}, status=404)
+            
         character.save()
 
 
@@ -203,7 +206,10 @@ def check_remaining_todos():
         remaining_todos = user.todo.filter(created_at__date=today, is_succeed=False)
         if remaining_todos.exists():
             message = "오늘 할일이 아직 남아있어요. 서둘러서 완료하세요!"
-            send_push_notification(user, message)
+            try:
+                send_push_notification(user, message)
+            except AttributeError:
+                return JsonResponse({'error': '유효하지 않은 사용자입니다.'}, status=404)
     
 
 def scheduled_job():

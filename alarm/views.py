@@ -29,10 +29,10 @@ def send_push_notification(user, message):
         
         payload = Payload(alert=message, sound='default', badge=1)
         apns_client.send_notification(device_token, payload, topic=APNS_TOPIC)
-    except ObjectDoesNotExist:
-        return JsonResponse({'error': '디바이스 토큰이 없습니다.'}, status=400)
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=400)
+    except AttributeError:
+        raise
+    except Exception as e: 
+        raise e
 
 
 
