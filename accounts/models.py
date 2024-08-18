@@ -18,7 +18,7 @@ class CustomUser(AbstractUser):
     social_uid = models.CharField(max_length=255, blank=True)
     is_social_user = models.BooleanField(default=False)
     
-    device_token = models.CharField(max_length=255, blank=True, null=True)
+    device_token = models.CharField(max_length=255)
 
     def __str__(self):
         return self.email
