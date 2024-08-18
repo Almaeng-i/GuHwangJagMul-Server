@@ -139,13 +139,13 @@ def save_device_token(request):
         device_token = data.get('devicetoken')
         user_id = data.get('userid')
         
-        if device_token and user_id:
-            user = CustomUser.objects.get(id=user_id)
-            user.device_token = device_token
-            user.save()
-            return JsonResponse({'success': '디바이스 토큰을 저장하였습니다.'})
-        else:
+        if not device_token or not user_id:
             return JsonResponse({'error': '디바이스 토큰 또는 사용자 ID가 없습니다.'}, status=400)
+            
+        user = CustomUser.objects.get(id=user_id)
+        user.device_token = device_token
+        user.save()
+        return JsonResponse({'success': '디바이스 토큰을 저장하였습니다.'})
         
     except CustomUser.DoesNotExist:
         return JsonResponse({'error': '해당 유저가 존재하지 않습니다.'}, status=404)
