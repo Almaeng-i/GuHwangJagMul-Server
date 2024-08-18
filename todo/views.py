@@ -166,14 +166,11 @@ def update_character_exp(user, grant_exp):
         
         if before_exp != character_exp:
             message = f'내 알맹이가 {character.level} 레벨에 도달했습니다!'
-            try:
-                send_push_notification(user, message)
-            except AttributeError:
-                return JsonResponse({'error': '유효하지 않은 사용자입니다.'}, status=404)
+            character.save()
             
-        character.save()
-
-
+            send_push_notification(user, message)
+            
+            
 # 특정 사용자에 대해 지정된 날짜의 모든 Todo 항목의 is_succeed 값을 리스트 형태로 가져옴
 def get_todo_success_list(user, year, month, day):
     success_list = list(Todo.objects.filter(
@@ -206,11 +203,8 @@ def check_remaining_todos():
         remaining_todos = user.todo.filter(created_at__date=today, is_succeed=False)
         if remaining_todos.exists():
             message = "오늘 할일이 아직 남아있어요. 서둘러서 완료하세요!"
-            try:
-                send_push_notification(user, message)
-            except AttributeError:
-                return JsonResponse({'error': '유효하지 않은 사용자입니다.'}, status=404)
-    
+            send_push_notification(user, message)
+
 
 def scheduled_job():
     users = CustomUser.objects.all()

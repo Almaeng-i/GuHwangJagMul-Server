@@ -21,19 +21,10 @@ APPLE_AUTH_KEY_ID = getattr(settings, 'APPLE_AUTH_KEY_ID')
 
 
 def send_push_notification(user, message):
-    try:
-        device_token = user.device_token
-        
-        credentials = CertificateCredentials(APNS_CERTIFICATE_PATH)
-        apns_client = APNsClient(credentials=credentials)
-        
-        payload = Payload(alert=message, sound='default', badge=1)
-        apns_client.send_notification(device_token, payload, topic=APNS_TOPIC)
-    except AttributeError:
-        raise
-    except Exception as e: 
-        raise e
-
-
-
-
+    device_token = user.device_token
+    
+    credentials = CertificateCredentials(APNS_CERTIFICATE_PATH)
+    apns_client = APNsClient(credentials=credentials)
+    
+    payload = Payload(alert=message, sound='default', badge=1)
+    apns_client.send_notification(device_token, payload, topic=APNS_TOPIC)
