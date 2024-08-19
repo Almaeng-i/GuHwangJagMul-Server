@@ -22,7 +22,10 @@ def generate_access_token(user_id):
 
     # JWT 토큰 생성
     jwt_token = jwt.encode(payload, getattr(settings, 'SECRET_KEY'), algorithm)
-
+    
+    if isinstance(jwt_token, bytes):
+        jwt_token = jwt_token.decode('utf-8')
+        
     return jwt_token
 
 def generate_refresh_token(user_id):
@@ -37,6 +40,9 @@ def generate_refresh_token(user_id):
 
     # JWT 토큰 생성
     jwt_token = jwt.encode(payload, getattr(settings, 'SECRET_KEY'), algorithm)
+    
+    if isinstance(jwt_token, bytes):
+        jwt_token = jwt_token.decode('utf-8')
 
     return jwt_token 
    

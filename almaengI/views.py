@@ -17,7 +17,7 @@ def is_almaengi_type_valid(almaengi_type):
 def save_almaengi(request):
     user = request.user
     almaengi_data = json.loads(request.body)
-    almaengi_type = almaengi_data.get('character_type')
+    almaengi_type = almaengi_data.get('type')
     almaengi_name = almaengi_data.get('name')
     
     if not is_almaengi_type_valid(almaengi_type):

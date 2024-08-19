@@ -9,8 +9,8 @@ from almaengI.models import Character
 from django.utils import timezone
 from GHJM.utils import parse_json_body
 from apscheduler.schedulers.background import BackgroundScheduler
-import json
-
+from alarm.views import send_push_notification
+import json, atexit
 
 # Create your views here.
 @require_http_methods(['POST'])
@@ -143,11 +143,13 @@ def get_my_todo_list(request):
     # safe False로 지정하여 리스트 값도 반환할 수 있도록 설정.
     return JsonResponse(todos_data, safe=False)
 
+
 def update_character_exp(user, grant_exp):
     max_exp = 200
     characters = Character.objects.filter(user=user).exclude(exp=max_exp)
     
     for character in characters:
+        before_exp = character.exp
         character.exp += grant_exp
         character_exp = character.exp
         
@@ -162,9 +164,13 @@ def update_character_exp(user, grant_exp):
         elif character_exp > max_exp:
             character_exp = max_exp      
         
-        character.save()
-
-
+        if before_exp != character_exp:
+            message = f'내 알맹이가 {character.level} 레벨에 도달했습니다!'
+            character.save()
+            
+            send_push_notification(user, message)
+            
+            
 # 특정 사용자에 대해 지정된 날짜의 모든 Todo 항목의 is_succeed 값을 리스트 형태로 가져옴
 def get_todo_success_list(user, year, month, day):
     success_list = list(Todo.objects.filter(
@@ -190,6 +196,16 @@ def monthly_todo_exp(user, year, month):
     update_character_exp(user, grant_exp)  
 
 
+def check_remaining_todos():
+    users = CustomUser.objects.all()
+    today = timezone.now().date()
+    for user in users:
+        remaining_todos = user.todo.filter(created_at__date=today, is_succeed=False)
+        if remaining_todos.exists():
+            message = "오늘 할일이 아직 남아있어요. 서둘러서 완료하세요!"
+            send_push_notification(user, message)
+
+
 def scheduled_job():
     users = CustomUser.objects.all()
     today = timezone.now().date()
@@ -197,6 +213,11 @@ def scheduled_job():
         todo_exp(user, today.year, today.month, today.day)
         monthly_todo_exp(user, today.year, today.month)
 
+    
 scheduler = BackgroundScheduler()
 scheduler.add_job(scheduled_job, 'cron', hour=0, minute=0)  # 매일밤 자정에 실행되도록 설정
+scheduler.add_job(check_remaining_todos, 'cron', hour=20, minute=0) # 매일 오후 8시에 check_remaining_todos 실행
 scheduler.start()
+
+atexit.register(lambda: scheduler.shutdown())   # 서버가 종료될때 안전하게 스케줄러 종료하도록 설정.
+    

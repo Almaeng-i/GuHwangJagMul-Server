@@ -70,6 +70,15 @@ REFRESH_EXPIRE_TIME = get_secret('REFRESH_EXPIRE_TIME', secrets)
 
 ALGORITHM = get_secret('ALGORITHM', secrets)
 
+# certificate path
+APNS_CERTIFICATE_PATH = get_secret('APNS_CERTIFICATE_PATH', secrets)
+APNS_KEY_PATH = get_secret('APNS_KEY_PATH', secrets)
+
+# APPLE
+APPLE_BUNDLE_ID = get_secret('APPLE_BUNDLE_ID', secrets)
+APPLE_TEAM_ID = get_secret('APPLE_TEAM_ID', secrets)
+APPLE_AUTH_KEY_ID = get_secret('APPLE_AUTH_KEY_ID', secrets)
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -89,6 +98,7 @@ INSTALLED_APPS = [
     'todo',
     'bucket_list',
     'monthly_goal',
+    'alarm',
     
     # DRF 
     'rest_framework',
